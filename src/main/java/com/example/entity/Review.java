@@ -7,15 +7,14 @@ import java.time.LocalDate;
 @Table(name = "reviews")
 public class Review {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "todoSeqGen")
-    @SequenceGenerator(name = "todoSeqGen", sequenceName = "todoSeq", initialValue = 0)
     private Long id;
 
-    @ManyToOne
-    private Book book;
+    @Column(name = "book_id")
+    private Long book;
 
-    @ManyToOne
-    private User user;
+
+    @Column(name = "user_id")
+    private Long user;
 
     @Lob
     private String reviewText;
@@ -32,21 +31,7 @@ public class Review {
         this.id = id;
     }
 
-    public Book getBook() {
-        return book;
-    }
 
-    public void setBook(Book book) {
-        this.book = book;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 
     public String getReviewText() {
         return reviewText;
@@ -70,6 +55,22 @@ public class Review {
 
     public void setUserRating(byte userRating) {
         this.userRating = userRating;
+    }
+
+    public Long getBook() {
+        return book;
+    }
+
+    public void setBook(Long book) {
+        this.book = book;
+    }
+
+    public Long getUser() {
+        return user;
+    }
+
+    public void setUser(Long user) {
+        this.user = user;
     }
 
     @Override

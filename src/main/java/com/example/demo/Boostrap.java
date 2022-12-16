@@ -79,7 +79,7 @@ public class Boostrap implements ApplicationListener<ContextRefreshedEvent> {
         }
         System.out.println("list arrived....");
         PrintWriter rt = new PrintWriter(System.out);
-        int batchSize = 1000;
+        int batchSize = 100000;
         int totalObjects = list.size();
         for (int i = 0; i < totalObjects; i += batchSize) {
             rt.append("\nsublist ");
@@ -193,29 +193,29 @@ public class Boostrap implements ApplicationListener<ContextRefreshedEvent> {
     }
 
     private List<Review> getReviews() throws IOException {
-        List<Review> list = new ArrayList<>();
+        List<Review> list = new ArrayList<>(6000000);
 
         BufferedReader br = new BufferedReader(new FileReader("src/main/java/com/example/betaReviews.csv"));
         CSVParser parser = CSVFormat.DEFAULT.withDelimiter(',').withHeader().parse(br);
 
-        int i = 0;
-        PrintWriter rt = new PrintWriter(System.out);
         Random random = new Random();
+        Long id = 0l;
         for (CSVRecord record : parser.getRecords()) {
-            rt.append("\n");
-            rt.append(Integer.toString(i++));
-            rt.flush();
+
             Review review = new Review();
-            review.setBook(bookRepository.getById(Long.valueOf(record.get("book_id"))));
-            review.setUser(userRepository.getById(Long.valueOf(record.get("new_id"))));
+            id++;
+            review.setId(id);
+            review.setBook(Long.valueOf(record.get("book_id")));
+            review.setUser(Long.valueOf(record.get("new_id")));
             review.setReviewText(record.get("review_text"));
             review.setUserRating(Byte.valueOf(record.get("user_rating")));
             LocalDate date = LocalDate.now().minusYears(random.nextInt(4)).minusMonths(random.nextInt(12)).minusDays(random.nextInt(12));
             review.setDate(date);
-
             list.add(review);
         }
         System.out.println("list leaving....");
+        br.close();
+        parser.close();
         return list;
     }
 }
