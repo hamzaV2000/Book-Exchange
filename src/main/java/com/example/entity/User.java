@@ -3,6 +3,7 @@ package com.example.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.Set;
 
 
@@ -39,7 +40,14 @@ public class User{
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private Set<Review> reviewSet;
 
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles;
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    private Set<OwnedBook> ownedBookSet;
 
 
     public Long getId() {
@@ -162,11 +170,19 @@ public class User{
         this.reviewSet = reviewSet;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                '}';
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    public Set<OwnedBook> getOwnedBookSet() {
+        return ownedBookSet;
+    }
+
+    public void setOwnedBookSet(Set<OwnedBook> ownedBookSet) {
+        this.ownedBookSet = ownedBookSet;
     }
 }
