@@ -40,7 +40,6 @@ public class SecurityConfiguration{
                 .permitAll()
                 .and()
                 .csrf().disable()
-                .cors().disable()
                 .addFilterBefore
                         (jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement()
