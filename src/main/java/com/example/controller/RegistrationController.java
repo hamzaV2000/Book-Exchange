@@ -1,9 +1,5 @@
 package com.example.controller;
 
-import java.util.logging.Logger;
-
-
-
 import com.example.crm.CrmUser;
 import com.example.entity.User;
 import com.example.services.UserService;
@@ -12,9 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.logging.Logger;
 
 
 @RestController
@@ -24,7 +21,7 @@ public class RegistrationController {
     private UserService userService;
 
 
-    private Logger logger = Logger.getLogger(getClass().getName());
+    private final Logger logger = Logger.getLogger(getClass().getName());
     
 	@InitBinder
 	public void initBinder(WebDataBinder dataBinder) {
@@ -35,13 +32,31 @@ public class RegistrationController {
 	@PostMapping("/register")
 	public String register(@Valid @RequestBody  CrmUser s, BindingResult bindingResult){
 
+		String emailExist = null;
+		String usernameExist = null;
+		if(s.getEmail() != null && userService.findByEmail(s.getEmail()) != null)
+			emailExist = "Email already exists !.";
+
+		if(s.getUserName() != null && userService.findByUserName(s.getUserName()) != null)
+			usernameExist = "username already exists !.";
+
+		StringBuilder sb = new StringBuilder();
+
 		if(bindingResult.hasErrors()){
-			StringBuilder sb = new StringBuilder();
 			bindingResult.getAllErrors().forEach(objectError -> sb.append(objectError.getDefaultMessage()+'\n'));
-			return sb.toString();
 		}
 
-		return "ok ";
+		if(emailExist != null)
+			sb.append(emailExist + '\n');
+		if(usernameExist != null)
+			sb.append(usernameExist + '\n');
+
+
+		if(!sb.toString().equals(""))
+			return sb.toString();
+
+		userService.save(s);
+		return "success";
 	}
 
 	@PostMapping("/registerx")

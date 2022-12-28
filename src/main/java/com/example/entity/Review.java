@@ -2,7 +2,7 @@ package com.example.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-
+import org.hibernate.annotations.GenericGenerator;
 
 import java.sql.Timestamp;
 
@@ -10,6 +10,8 @@ import java.sql.Timestamp;
 @Table(name = "reviews")
 public class Review {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO, generator="seq")
+    @GenericGenerator(name = "seq", strategy="increment")
     private Long id;
 
     @ManyToOne
@@ -63,4 +65,5 @@ public class Review {
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
     }
+
 }

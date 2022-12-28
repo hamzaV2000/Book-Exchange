@@ -1,15 +1,11 @@
 package com.example.crm;
 
 
-
-import com.example.entity.User;
 import com.example.validation.FieldMatch;
 import com.example.validation.ValidEmail;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.springframework.validation.annotation.Validated;
-
-import jakarta.validation.constraints.NotNull;
-import java.time.LocalDate;
 
 
 @FieldMatch.List({
@@ -18,36 +14,40 @@ import java.time.LocalDate;
 @Validated
 public class CrmUser {
 
-	@NotNull(message = "is required")
+	@NotNull(message = "username is required")
 	@Size(min = 1, message = "is required")
 	private String userName;
 
-	@NotNull(message = "is required")
+	@NotNull(message = "password is required")
 	@Size(min = 1, message = "is required")
 	private String password;
 	
-	@NotNull(message = "is required")
+	@NotNull(message = "password is required")
 	@Size(min = 1, message = "is required")
 	private String matchingPassword;
 
-	@NotNull(message = "is required")
+	@NotNull(message = "firstname is required")
 	@Size(min = 1, message = "is required")
 	private String firstName;
 
-	@NotNull(message = "is required")
+	@NotNull(message = "lastname is required")
 	@Size(min = 1, message = "is required")
 	private String lastName;
 
 	@ValidEmail
-	@NotNull(message = "is required")
+	@NotNull(message = "email is required")
 	@Size(min = 1, message = "is required")
 	private String email;
 	
 	
-	@NotNull(message = "is required")
+	@NotNull(message = "image is required")
 	@Size(min = 1, message = "is required")
 	private String image;
-	private LocalDate birthDate;
+
+	@NotNull(message = "city is required")
+	@Size(min = 1, message = "is required")
+	private String city;
+
 	public String getUserName() {
 		return userName;
 	}
@@ -91,13 +91,12 @@ public class CrmUser {
 	public void setImage(String image) {
 		this.image = image;
 	}
-	public LocalDate getBirthDate() {
-		return birthDate;
-	}
-	public void setBirthDate(LocalDate birthDate) {
-		this.birthDate = birthDate;
+
+	public String getCity() {
+		return city;
 	}
 
-
-
+	public void setCity(String city) {
+		this.city = city;
+	}
 }

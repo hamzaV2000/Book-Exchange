@@ -1,5 +1,7 @@
 package com.example.entity;
 
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -10,9 +12,12 @@ public class OwnedBook {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private Book book;
-    @ManyToOne
+
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonBackReference
     private User user;
     private boolean avaliable;
     public boolean isAvaliable() {
@@ -38,11 +43,21 @@ public class OwnedBook {
         this.book = book;
     }
 
+
     public User getUser() {
         return user;
     }
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    @Override
+    public String toString() {
+        return "OwnedBook{" +
+                "id=" + id +
+                ", book=" + book.getTitle() +
+                ", available=" + avaliable +
+                '}';
     }
 }

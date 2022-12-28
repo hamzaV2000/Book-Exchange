@@ -1,9 +1,9 @@
 package com.example.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.Set;
 
 
@@ -47,6 +47,7 @@ public class User{
     private Set<Role> roles;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    @JsonManagedReference
     private Set<OwnedBook> ownedBookSet;
 
 
@@ -184,5 +185,22 @@ public class User{
 
     public void setOwnedBookSet(Set<OwnedBook> ownedBookSet) {
         this.ownedBookSet = ownedBookSet;
+    }
+
+    //convenience method
+    public void addOwnedBook(Book book){
+        OwnedBook ownedBook = new OwnedBook();
+        ownedBook.setUser(this);
+        ownedBook.setBook(book);
+        ownedBook.setAvaliable(false);
+
+        this.ownedBookSet.add(ownedBook);
+    }
+    @Override
+    public String toString() {
+        return "User{" +
+                ", userName='" + userName + '\'' +
+                ", password='" + password + '\'' +
+                '}';
     }
 }

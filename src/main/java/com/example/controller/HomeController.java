@@ -2,60 +2,98 @@ package com.example.controller;
 
 
 import com.example.entity.User;
+import com.example.services.BookService;
+import com.example.services.ReviewService;
 import com.example.services.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.Principal;
+import java.util.Arrays;
+import java.util.HashSet;
+
+import static com.example.controller.Utility.getResponseContent;
 
 @RestController
-@RequestMapping("")
+@RequestMapping("/home")
 public class HomeController {
+    private final String serverIP = "http://176.29.11.21";
+    private User user = null;
     private final UserService userService;
 
-    public HomeController(UserService userService) {
+    private final BookService bookService;
+
+    private final ReviewService reviewService;
+    private String top10 = null;
+
+    private String bySimilarUsers = null;
+
+    private String basedOnYourInterests = null;
+
+    public HomeController(UserService userService, BookService bookService, ReviewService reviewService) {
         this.userService = userService;
+        this.bookService = bookService;
+        this.reviewService = reviewService;
     }
 
     @GetMapping("")
     private String home(){
         return "";
     }
+
+    @GetMapping("/basedOnYourInterests")
+    private String basedOnYourInterests(Principal principal) throws IOException {
+        if(basedOnYourInterests == null){
+            if(user == null)
+                user = Utility.getUser(principal, userService);
+
+            HashSet<String> genres = new HashSet<>();
+            reviewService.findAllByUser(user).forEach(review -> {
+                if(review.getUserRating() >= 4){
+                    String[] genresArr = review.getBook().getGenres().replace("{", "").replace("}", "").split(",");
+                    Arrays.stream(genresArr).toList().forEach(genre ->{
+                        genres.add(genre);
+                    });
+                }
+            });
+            URL url = new URL(serverIP + "/search/genre/" + genres.toString().replace("[", "").replace("]", ""));
+            basedOnYourInterests =  getResponseContent(url);
+        }
+
+        return basedOnYourInterests;
+    }
+
     @GetMapping("/recommendBySimilarUsers")
     private String bySimilarUsers(Principal principal) throws IOException {
-        String name = principal.getName();
-        User user = userService.findByUserName(name);
-        URL url = new URL("http://127.0.0.1:5001/recommendBySimilarUsers/" + user.getId());
-        return getResponseContent(url);
-    }
+        if(bySimilarUsers == null) {
+            if(user == null)
+                user = Utility.getUser(principal, userService);
 
-    @GetMapping("/favorites")
-    private String favorites(Principal principal) throws IOException {
-        String name = principal.getName();
-        User user = userService.findByUserName(name);
-        URL url = new URL("http://127.0.0.1:5001/userFavorites/" + user.getId());
-        return getResponseContent(url);
-    }
+            URL url = new URL(serverIP + "/recommendBySimilarUsers/" + user.getId());
+            bySimilarUsers =  getResponseContent(url);
 
-
-
-    private String getResponseContent(URL url) throws IOException {
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("GET");
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(con.getInputStream()));
-        String inputLine;
-        StringBuffer content = new StringBuffer();
-        while ((inputLine = in.readLine()) != null) {
-            content.append(inputLine);
         }
-        in.close();
-        return content.toString();
+        return bySimilarUsers;
     }
+
+    @GetMapping("/top10")
+    private String getTop10() throws IOException {
+        if(top10 == null){
+            URL url = new URL(serverIP + "/topn");
+            top10 = getResponseContent(url);
+        }
+
+        return top10;
+    }
+
+
+
+
+
+
+
+
 }

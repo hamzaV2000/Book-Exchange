@@ -8,6 +8,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import java.util.Random;
+
 
 @SpringBootApplication
 @EnableJpaRepositories("com.example.repositories")
@@ -15,6 +17,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @ComponentScan("com.example")
 public class DemoApplication {
+	public final static int randomGlobal = new Random().nextInt();
 	public static void main(String[] args) {
 		SpringApplication.run(DemoApplication.class, args);
 

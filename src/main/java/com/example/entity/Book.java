@@ -1,11 +1,8 @@
 package com.example.entity;
 
 
-
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import org.hibernate.annotations.Proxy;
-
 
 import java.util.Set;
 
@@ -25,14 +22,19 @@ public class Book {
     private String publisher;
     private float publicationYear;
 
-    private float book_average_rating;
+
     private String coverPage;
     private String bookUrl;
-    private Integer ratingCount;
+
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "book")
+    @JsonIgnore
     private Set<Review> reviewsSet;
 
+
+    @OneToOne(mappedBy = "book", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private Rating rating;
 
     public Book() {
     }
@@ -93,13 +95,7 @@ public class Book {
         this.publicationYear = publicationYear;
     }
 
-    public float getBook_average_rating() {
-        return book_average_rating;
-    }
 
-    public void setBook_average_rating(float book_average_rating) {
-        this.book_average_rating = book_average_rating;
-    }
 
     public String getCoverPage() {
         return coverPage;
@@ -133,18 +129,28 @@ public class Book {
         this.publisher = publisher;
     }
 
-    public void setRatingCount(Integer ratingCount) {
-        this.ratingCount = ratingCount;
+    public Rating getRating() {
+        return rating;
     }
 
-    public Integer getRatingCount() {
-        return ratingCount;
+    public void setRating(Rating rating) {
+        this.rating = rating;
     }
 
     @Override
     public String toString() {
         return "Book{" +
-                "title='" + title + '\'' +
+                "description='" + description + '\'' +
+                ", id=" + id +
+                ", title='" + title + '\'' +
+                ", numOfPages=" + numOfPages +
+                ", genres='" + genres + '\'' +
+                ", author='" + author + '\'' +
+                ", publisher='" + publisher + '\'' +
+                ", publicationYear=" + publicationYear +
+                ", coverPage='" + coverPage + '\'' +
+                ", bookUrl='" + bookUrl + '\'' +
+                ", rating=" + rating +
                 '}';
     }
 }
