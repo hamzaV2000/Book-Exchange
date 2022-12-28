@@ -11,8 +11,9 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-
-public class CorsFilter implements Filter {
+@Component
+@Order(Ordered.HIGHEST_PRECEDENCE)
+public class CorsFilter implements Filter{
     private final Logger log = LoggerFactory.getLogger(CorsFilter.class);
 
     public CorsFilter() {
@@ -20,10 +21,11 @@ public class CorsFilter implements Filter {
     }
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        log.info("cors filter");
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-        response.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
+        response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
         response.setHeader("Access-Control-Max-Age", "3600");
