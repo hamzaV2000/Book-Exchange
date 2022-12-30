@@ -15,37 +15,37 @@ import org.springframework.validation.annotation.Validated;
 public class CrmUser {
 
 	@NotNull(message = "username is required")
-	@Size(min = 1, message = "is required")
+	@Size(min = 1, message = "username is required")
 	private String userName;
 
 	@NotNull(message = "password is required")
-	@Size(min = 1, message = "is required")
+	@Size(min = 1, message = "password is required")
 	private String password;
 	
 	@NotNull(message = "password is required")
-	@Size(min = 1, message = "is required")
+	@Size(min = 1, message = "matching password is required")
 	private String matchingPassword;
 
 	@NotNull(message = "firstname is required")
-	@Size(min = 1, message = "is required")
+	@Size(min = 1, message = "firstname is required")
 	private String firstName;
 
 	@NotNull(message = "lastname is required")
-	@Size(min = 1, message = "is required")
+	@Size(min = 1, message = "lastname is required")
 	private String lastName;
 
 	@ValidEmail
 	@NotNull(message = "email is required")
-	@Size(min = 1, message = "is required")
+	@Size(min = 1, message = "email is required")
 	private String email;
 	
 	
 	@NotNull(message = "image is required")
-	@Size(min = 1, message = "is required")
+	@Size(min = 1, message = "image is required")
 	private String image;
 
 	@NotNull(message = "city is required")
-	@Size(min = 1, message = "is required")
+	@Size(min = 1, message = "city is required")
 	private String city;
 
 	public String getUserName() {

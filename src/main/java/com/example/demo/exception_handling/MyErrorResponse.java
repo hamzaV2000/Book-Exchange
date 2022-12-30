@@ -1,8 +1,10 @@
 package com.example.demo.exception_handling;
 
+import org.springframework.http.ResponseEntity;
+
 import java.time.LocalDate;
 
-public class MyErrorResponse {
+public class MyErrorResponse  {
 	private int status;
 	private String message;
 	private LocalDate timstamp;
@@ -11,6 +13,7 @@ public class MyErrorResponse {
 	}
 
 	public MyErrorResponse(int status, String message, LocalDate timstamp) {
+
 		this.status = status;
 		this.message = message;
 		this.timstamp = timstamp;
