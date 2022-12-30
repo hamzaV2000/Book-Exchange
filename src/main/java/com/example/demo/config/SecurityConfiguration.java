@@ -1,5 +1,4 @@
 package com.example.demo.config;
-
 import com.example.demo.jwt.JwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -9,20 +8,17 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-
 @Configuration
 public class SecurityConfiguration{
-
     @Autowired
     private UserDetailsService userDetailsService;
     @Autowired
     private JwtFilter jwtFilter;
-
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -43,7 +39,7 @@ public class SecurityConfiguration{
                 .addFilterBefore
                         (jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement()
-                .maximumSessions(1).maxSessionsPreventsLogin(true);
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.headers().frameOptions().sameOrigin();
         http.authenticationProvider(authenticationProvider());

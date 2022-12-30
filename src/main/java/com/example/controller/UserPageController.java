@@ -48,6 +48,7 @@ public class UserPageController {
 
         User newUser = getUser(principal, userService);
         newUser.setPassword(null);
+        newUser.setReviewSet(null);
 
 
         return ResponseEntity.ok().body(newUser);

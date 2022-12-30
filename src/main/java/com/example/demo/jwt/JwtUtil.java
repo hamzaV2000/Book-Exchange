@@ -90,7 +90,7 @@ public class JwtUtil {
         });
 
         UserToken userToken = userTokenService.findUserTokenByUserName(username);
-
+        System.out.println(token + " \n" + userToken.getAccess_token());
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token) && userToken.getAccess_token().equals(token));
     }
     public Boolean validateRefreshToken(String token, UserDetails userDetails) {
