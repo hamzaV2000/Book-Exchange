@@ -62,32 +62,4 @@ public class RegistrationController {
 		return ResponseEntity.ok("success");
 	}
 
-	@PostMapping("/registerx")
-	public String processRegistrationForm(@Valid @ModelAttribute("crmUser") CrmUser theCrmUser, BindingResult theBindingResult,
-										  Model theModel) {
-		
-		String userName = theCrmUser.getUserName();
-		logger.info("Processing registration form for: " + userName);
-		
-		// form validation
-		 if (theBindingResult.hasErrors()){
-			 return "error";
-	        }
-
-		// check the database if user already exists
-        User existing = userService.findByUserName(userName);
-        if (existing != null){
-        	theModel.addAttribute("crmUser", new CrmUser());
-			theModel.addAttribute("registrationError", "User name already exists.");
-
-			logger.warning("User name already exists.");
-        	return "registration-form";
-        }
-     // create user account        						
-        userService.save(theCrmUser);
-        
-        logger.info("Successfully created user: " + userName);
-        
-        return "success";
-	}
 }

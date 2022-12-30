@@ -48,6 +48,10 @@ public class CrmUser {
 	@Size(min = 1, message = "city is required")
 	private String city;
 
+	@NotNull(message = "interest is required")
+	@Size(min = 1, message = "interest is required")
+	private String interest;
+
 	public String getUserName() {
 		return userName;
 	}
@@ -98,5 +102,13 @@ public class CrmUser {
 
 	public void setCity(String city) {
 		this.city = city;
+	}
+
+	public String getInterest() {
+		return interest;
+	}
+
+	public void setInterest(String interest) {
+		this.interest = interest;
 	}
 }

@@ -1,6 +1,8 @@
 package com.example.controller;
 
 
+import com.example.demo.exception_handling.MyException;
+import com.example.entity.Review;
 import com.example.entity.User;
 import com.example.services.BookService;
 import com.example.services.ReviewService;
@@ -14,13 +16,14 @@ import java.net.URL;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 import static com.example.controller.Utility.getResponseContent;
 
 @RestController
 @RequestMapping("/home")
 public class HomeController {
-    private final String serverIP = "http://176.29.11.21";
+    private final String serverIP = "http://176.29.11.21/python";
     private User user = null;
     private final UserService userService;
 
@@ -51,18 +54,29 @@ public class HomeController {
                 user = Utility.getUser(principal, userService);
 
             HashSet<String> genres = new HashSet<>();
-            reviewService.findAllByUser(user).forEach(review -> {
-                if(review.getUserRating() >= 4){
-                    String[] genresArr = review.getBook().getGenres().replace("{", "").replace("}", "").split(",");
-                    Arrays.stream(genresArr).toList().forEach(genre ->{
-                        genres.add(genre);
-                    });
-                }
-            });
-            URL url = new URL(serverIP + "/search/genre/" + genres.toString().replace("[", "").replace("]", ""));
-            basedOnYourInterests =  getResponseContent(url);
-        }
+            List<Review> reviewList = reviewService.findAllByUser(user);
+            if(reviewList.size() == 0){
 
+                if(user.getInterest() != null){
+
+                    URL url = new URL(serverIP + "/search/genre/" + user.getInterest());
+                    basedOnYourInterests =  getResponseContent(url);
+                }else{
+                    throw new MyException("Specify Interests or Rate books");
+                }
+            }else{
+                reviewList.forEach(review -> {
+                    if(review.getUserRating() >= 4){
+                        String[] genresArr = review.getBook().getGenres().replace("{", "").replace("}", "").split(",");
+                        Arrays.stream(genresArr).toList().forEach(genre ->{
+                            genres.add(genre);
+                        });
+                    }
+                });
+                URL url = new URL(serverIP + "/search/genre/" + genres.toString().replace("[", "").replace("]", ""));
+                basedOnYourInterests =  getResponseContent(url);
+            }
+        }
         return basedOnYourInterests;
     }
 

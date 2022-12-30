@@ -1,8 +1,13 @@
 package com.example.demo.jwt;
 
+import com.example.entity.User;
+import com.example.entity.UserToken;
+import com.example.services.UserService;
+import com.example.services.UserTokenService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +23,14 @@ import static com.example.demo.DemoApplication.randomGlobal;
 public class JwtUtil {
 
 
+    private final UserTokenService userTokenService;
+    private final UserService userService;
     private final String SECRET_KEY = randomGlobal + "secret" + randomGlobal;
+
+    public JwtUtil(UserTokenService userTokenService, @Lazy UserService userService) {
+        this.userTokenService = userTokenService;
+        this.userService = userService;
+    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -77,7 +89,9 @@ public class JwtUtil {
             list.contains(grantedAuthority);
         });
 
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token) );
+        UserToken userToken = userTokenService.findUserTokenByUserName(username);
+
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token) && userToken.getAccess_token().equals(token));
     }
     public Boolean validateRefreshToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
@@ -85,6 +99,9 @@ public class JwtUtil {
 
         if(list != null)
             return false;
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+
+        UserToken userToken = userTokenService.findUserTokenByUserName(username);
+
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token) &&  userToken.getRefresh_token().equals(token));
     }
 }

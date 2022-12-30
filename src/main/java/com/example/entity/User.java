@@ -36,6 +36,7 @@ public class User{
     private String gender;
     private String streetAddress;
     private String city;
+    private String interest;
     private LocalDate birthDate;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private Set<Review> reviewSet;
@@ -46,9 +47,11 @@ public class User{
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "user")
     @JsonManagedReference
     private Set<OwnedBook> ownedBookSet;
+
+
 
 
     public Long getId() {
@@ -183,6 +186,16 @@ public class User{
         return ownedBookSet;
     }
 
+    public String getInterest() {
+        return interest;
+    }
+
+    public void setInterest(String interest) {
+        this.interest = interest;
+    }
+
+
+
     public void setOwnedBookSet(Set<OwnedBook> ownedBookSet) {
         this.ownedBookSet = ownedBookSet;
     }
@@ -196,11 +209,10 @@ public class User{
 
         this.ownedBookSet.add(ownedBook);
     }
+
     @Override
     public String toString() {
         return "User{" +
-                ", userName='" + userName + '\'' +
-                ", password='" + password + '\'' +
-                '}';
+                ", userName='" + userName + '}';
     }
 }

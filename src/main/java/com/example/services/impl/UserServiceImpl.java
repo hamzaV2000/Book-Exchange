@@ -75,6 +75,7 @@ public class UserServiceImpl implements UserService {
         user.setProfileImageUrl(theCrmUser.getImage());
         user.setRoles(new HashSet<>(Collections.singletonList(roleRepository.findByRole("ROLE_USER"))));
         user.setEmail(theCrmUser.getEmail());
+        user.setInterest(theCrmUser.getInterest());
         save(user);
     }
 

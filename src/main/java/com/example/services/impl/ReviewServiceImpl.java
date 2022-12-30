@@ -51,8 +51,6 @@ public class ReviewServiceImpl implements ReviewService {
 
             review.setUserRating(object.getUserRating());
             reviewRepository.save(review);
-
-
         }
         ratingService.save(rating_entity);
         return review;

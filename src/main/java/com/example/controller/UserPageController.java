@@ -2,6 +2,7 @@ package com.example.controller;
 
 import com.example.entity.*;
 import com.example.services.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -42,6 +43,18 @@ public class UserPageController {
 
     }
 
+    @GetMapping("/user")
+    private ResponseEntity<User> getUserInfo(Principal principal){
+
+        User newUser = getUser(principal, userService);
+        newUser.setPassword(null);
+
+
+        return ResponseEntity.ok().body(newUser);
+
+    }
+
+
     @GetMapping("/favorites")
     private String getFavorites(Principal principal) throws IOException {
         if(favorites == null){
@@ -52,6 +65,8 @@ public class UserPageController {
         }
         return favorites;
     }
+
+
     @GetMapping("/owned")
     private Set<OwnedBook> getOwned(Principal principal){
         if(owned == null){
@@ -62,14 +77,15 @@ public class UserPageController {
         return owned;
     }
 
+
     @ResponseBody
     @PostMapping("/addBookToOwned")
-    private String addBookToOwned(@RequestParam Long book_id, Principal principal){
+    private ResponseEntity<?> addBookToOwned(@RequestParam Long book_id, Principal principal){
         if(user == null)
             user = getUser(principal, userService);
         Book book = bookService.findById(book_id);
         if(book == null)
-            return "failed";
+            return ResponseEntity.badRequest().body("failed");
 
         OwnedBook ownedBook = new OwnedBook();
         ownedBook.setBook(book);
@@ -77,16 +93,18 @@ public class UserPageController {
         ownedBook.setAvaliable(false);
         ownedBookService.save(ownedBook);
         user.getOwnedBookSet().add(ownedBook);
-        return "success";
+        return ResponseEntity.ok("success");
     }
+
+
     @ResponseBody
     @PostMapping("/rateBook")
-    private String rateBook(@RequestParam Long book_id, @RequestParam byte rating, Principal principal){
+    private ResponseEntity<?> rateBook(@RequestParam Long book_id, @RequestParam byte rating, Principal principal){
         if(user == null)
             user = getUser(principal, userService);
         Book book = bookService.findById(book_id);
         if(book == null)
-            return "failed";
+            return ResponseEntity.badRequest().body("failed");
 
 
         Review review = new Review();
@@ -103,11 +121,13 @@ public class UserPageController {
         reviewService.save(review);
 
 
-        return "success";
+        return ResponseEntity.ok("success");
     }
+
+
     @ResponseBody
     @PostMapping("/makeBookAvailable")
-    private String makeBookAvailable(@RequestParam Long book_id ,@RequestParam Boolean available, Principal principal){
+    private ResponseEntity<?> makeBookAvailable(@RequestParam Long book_id , @RequestParam Boolean available, Principal principal){
         if(user == null)
             user = getUser(principal, userService);
 
@@ -115,6 +135,6 @@ public class UserPageController {
         book.setAvaliable(available);
         ownedBookService.save(book);
 
-        return "success";
+        return ResponseEntity.ok("success");
     }
 }

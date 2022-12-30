@@ -3,6 +3,9 @@ package com.example.controller;
 
 import com.example.demo.exception_handling.MyException;
 import com.example.demo.jwt.JwtUtil;
+import com.example.entity.UserToken;
+import com.example.services.UserService;
+import com.example.services.UserTokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,12 +25,17 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
+
+
     private final JwtUtil jwtUtil;
 
-    public AuthController(AuthenticationManager authenticationManager, UserDetailsService userDetailsService, JwtUtil jwtUtil) {
+    private final UserTokenService userTokenService;
+
+    public AuthController(AuthenticationManager authenticationManager, UserDetailsService userDetailsService, JwtUtil jwtUtil, UserTokenService userTokenService) {
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
+        this.userTokenService = userTokenService;
     }
 
     @PostMapping("/auth")
@@ -35,6 +43,7 @@ public class AuthController {
         if(SecurityContextHolder.getContext().getAuthentication() != null)
             return ResponseEntity.ok("already logged in");
         try{
+            System.out.println("here");
             final UserDetails user
                     = userDetailsService.loadUserByUsername(request.getEmail());
 
@@ -46,7 +55,19 @@ public class AuthController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             if(user != null){
-                return ResponseEntity.ok(jwtUtil.generateTokens(user));
+                Map<String, String> tokens = jwtUtil.generateTokens(user);
+
+                UserToken token = userTokenService.findUserTokenByUserName(request.getEmail());
+                if(token == null){
+                    userTokenService.save(new UserToken(request.getEmail(), tokens.get("access_token"), tokens.get("refresh_token")));
+                }
+                else{
+                    token.setAccess_token(tokens.get("access_token"));
+                    token.setRefresh_token(tokens.get("refresh_token"));
+
+                    userTokenService.save(token);
+                }
+                return ResponseEntity.ok(tokens);
             }
         }catch (Exception e){
             throw  new MyException("Problem with Credentials");
@@ -70,7 +91,14 @@ public class AuthController {
                 final boolean isTokenValid = jwtUtil.validateRefreshToken(jwtToken, userDetails);
                 if(isTokenValid){
                     Map<String, String> tokens = jwtUtil.generateTokens(userDetails);
+                    UserToken token = userTokenService.findUserTokenByUserName(userEmail);
+
                     tokens.put("refresh_token", jwtToken);
+
+                    token.setAccess_token(tokens.get("access_token"));
+                    token.setRefresh_token(tokens.get("refresh_token"));
+
+                    userTokenService.save(token);
                     return ResponseEntity.ok(tokens);
                 }
             }

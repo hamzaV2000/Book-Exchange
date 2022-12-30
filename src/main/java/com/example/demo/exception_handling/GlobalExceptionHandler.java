@@ -16,6 +16,11 @@ public class GlobalExceptionHandler {
 		MyErrorResponse response = new MyErrorResponse(HttpStatus.BAD_REQUEST.value(), "error", LocalDate.now());
 		return ResponseEntity.badRequest().body(response);
 	  }
+	@ExceptionHandler(MyException.class)
+	public ResponseEntity<?> handleMyError(HttpServletRequest req, Exception ex) {
+		MyErrorResponse response = new MyErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), LocalDate.now());
+		return ResponseEntity.badRequest().body(response);
+	}
 	@ExceptionHandler(NullPointerException.class)
 	  public ResponseEntity<?> handleNullError(HttpServletRequest req, Exception ex) {
 		MyErrorResponse response = new MyErrorResponse(HttpStatus.BAD_REQUEST.value(), "error", LocalDate.now());
