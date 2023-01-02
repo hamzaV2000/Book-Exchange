@@ -17,12 +17,12 @@ import static com.example.controller.Utility.getResponseContent;
 @RestController
 @RequestMapping("/search")
 public class SearchController {
-    private final String serverIP = "http://176.29.11.21";
+    private final String serverIP = "http://176.29.9.132/python";
 
     @GetMapping("")
     private String bookSearch(@RequestParam String domain, @RequestParam String query)  {
         try {
-            URL url = new URL(serverIP + "/python/search/" + domain + "/" + query);
+            URL url = new URL(serverIP + "/search/" + domain + "/" + query);
             String res = getResponseContent(url);
             if(res.contains("not found"))
                 throw new MyException("not found");

@@ -1,6 +1,9 @@
 package com.example.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+
 import java.sql.Timestamp;
 
 @Entity
@@ -11,28 +14,37 @@ public class Message {
     private Long id;
 
     @ManyToOne
+    @NotNull
+    @JsonIgnore
     private User sender;
 
     @ManyToOne
-    private User receiver;
+    @NotNull
+    @JsonIgnore
+    private BookExchange bookExchange;
 
+    @NotNull
     private Timestamp timestamp;
+
+    @NotNull
+    private String message;
 
     public Message() {
     }
 
-    public Message(User sender, User receiver) {
+    public Message(User sender, BookExchange bookExchange, Timestamp timestamp, String message) {
         this.sender = sender;
-        this.receiver = receiver;
-        this.timestamp = new Timestamp(System.currentTimeMillis());
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+        this.bookExchange = bookExchange;
+        this.timestamp = timestamp;
+        this.message = message;
     }
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public User getSender() {
@@ -43,12 +55,12 @@ public class Message {
         this.sender = sender;
     }
 
-    public User getReceiver() {
-        return receiver;
+    public BookExchange getBookExchange() {
+        return bookExchange;
     }
 
-    public void setReceiver(User receiver) {
-        this.receiver = receiver;
+    public void setBookExchange(BookExchange bookExchange) {
+        this.bookExchange = bookExchange;
     }
 
     public Timestamp getTimestamp() {
@@ -57,5 +69,13 @@ public class Message {
 
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

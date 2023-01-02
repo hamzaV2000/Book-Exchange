@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.net.URL;
 import java.security.Principal;
+import java.sql.SQLOutput;
 import java.sql.Timestamp;
 import java.util.Set;
 
@@ -17,7 +18,8 @@ import static com.example.controller.Utility.getUser;
 @RestController
 @RequestMapping("/profile")
 public class UserPageController {
-    private final String serverIP = "http://176.29.11.21";
+    private final String serverIP = "http://176.29.9.132/python";
+
     private User user = null;
 
     private final UserService userService;
@@ -27,10 +29,6 @@ public class UserPageController {
     private final ReviewChangesService reviewChangesService;
 
     private final RatingService ratingService;
-    private String favorites = null;
-    private Set<OwnedBook> owned;
-
-
 
 
     public UserPageController(UserService userService, OwnedBookService ownedBookService, BookService bookService, ReviewService reviewService, ReviewChangesService reviewChangesService, RatingService ratingService) {
@@ -49,6 +47,7 @@ public class UserPageController {
         User newUser = getUser(principal, userService);
         newUser.setPassword(null);
         newUser.setReviewSet(null);
+        newUser.setOwnedBookSet(null);
 
 
         return ResponseEntity.ok().body(newUser);
@@ -58,32 +57,38 @@ public class UserPageController {
 
     @GetMapping("/favorites")
     private String getFavorites(Principal principal) throws IOException {
-        if(favorites == null){
-            if(user == null)
-                user = getUser(principal, userService);
-            URL url = new URL(serverIP + "/userFavorites/" + user.getId());
-            favorites =  getResponseContent(url);
-        }
-        return favorites;
+
+        user = getUser(principal, userService);
+
+        URL url = new URL(serverIP + "/userFavorites/" + user.getId());
+
+        return getResponseContent(url);
     }
 
 
     @GetMapping("/owned")
     private Set<OwnedBook> getOwned(Principal principal){
-        if(owned == null){
-            if(user == null)
-                user = getUser(principal, userService);
-            owned =  user.getOwnedBookSet();
-        }
-        return owned;
+
+        user = getUser(principal, userService);
+
+        System.out.println(user.getUserName());
+
+        user.getOwnedBookSet().forEach(book ->{
+            book.setUser(null);
+            book.getBook().getRating().setBook(null);
+
+        });
+
+        return  user.getOwnedBookSet();
     }
 
 
     @ResponseBody
     @PostMapping("/addBookToOwned")
     private ResponseEntity<?> addBookToOwned(@RequestParam Long book_id, Principal principal){
-        if(user == null)
-            user = getUser(principal, userService);
+
+        user = getUser(principal, userService);
+
         Book book = bookService.findById(book_id);
         if(book == null)
             return ResponseEntity.badRequest().body("failed");
@@ -101,8 +106,9 @@ public class UserPageController {
     @ResponseBody
     @PostMapping("/rateBook")
     private ResponseEntity<?> rateBook(@RequestParam Long book_id, @RequestParam byte rating, Principal principal){
-        if(user == null)
-            user = getUser(principal, userService);
+
+        user = getUser(principal, userService);
+
         Book book = bookService.findById(book_id);
         if(book == null)
             return ResponseEntity.badRequest().body("failed");
@@ -129,8 +135,8 @@ public class UserPageController {
     @ResponseBody
     @PostMapping("/makeBookAvailable")
     private ResponseEntity<?> makeBookAvailable(@RequestParam Long book_id , @RequestParam Boolean available, Principal principal){
-        if(user == null)
-            user = getUser(principal, userService);
+
+        user = getUser(principal, userService);
 
         OwnedBook book = ownedBookService.findOwnedBookByBookAndUser(bookService.findById(book_id), user);
         book.setAvaliable(available);

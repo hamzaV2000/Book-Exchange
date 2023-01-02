@@ -55,9 +55,9 @@ public class OwnedBook {
     @Override
     public String toString() {
         return "OwnedBook{" +
-                "id=" + id +
-                ", book=" + book.getTitle() +
-                ", available=" + avaliable +
+                "book=" + book.getTitle() +
+                ", user=" + user.getUserName() +
+                ", avaliable=" + avaliable +
                 '}';
     }
 }

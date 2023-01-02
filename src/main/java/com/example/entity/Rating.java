@@ -1,6 +1,7 @@
 package com.example.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -13,6 +14,7 @@ public class Rating {
     @OneToOne
     @MapsId
     @JoinColumn(name = "book_id")
+    @JsonIgnore
     private Book book;
 
     private Integer rating_count;

@@ -1,5 +1,6 @@
 package com.example.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
@@ -39,6 +40,7 @@ public class User{
     private String interest;
     private LocalDate birthDate;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    @JsonIgnore
     private Set<Review> reviewSet;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -213,6 +215,19 @@ public class User{
     @Override
     public String toString() {
         return "User{" +
-                ", userName='" + userName + '}';
+                "id=" + id +
+                ", userName='" + userName + '\'' +
+                ", email='" + email + '\'' +
+                ", telephone='" + telephone + '\'' +
+                ", profileImageUrl='" + profileImageUrl + '\'' +
+                ", lastLoginDate=" + lastLoginDate +
+                ", joinDate=" + joinDate +
+                ", gender='" + gender + '\'' +
+                ", streetAddress='" + streetAddress + '\'' +
+                ", city='" + city + '\'' +
+                ", interest='" + interest + '\'' +
+                ", birthDate=" + birthDate +
+                ", ownedBookSet=" + ownedBookSet +
+                '}';
     }
 }

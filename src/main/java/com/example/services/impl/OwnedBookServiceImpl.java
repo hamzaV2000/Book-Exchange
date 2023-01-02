@@ -24,7 +24,7 @@ public class OwnedBookServiceImpl implements OwnedBookService {
 
     @Override
     public OwnedBook findById(Long aLong) {
-        return null;
+        return ownedBookRepository.findById(aLong).orElse(null);
     }
 
     @Override
