@@ -59,12 +59,7 @@ public class MessageController {
             throw new MyException("You don't have access to this conversation.");
 
         List<Message> messages = messageService.findAllByBookExchange(bookExchange);
-        Collections.sort(messages, new Comparator<Message>() {
-            @Override
-            public int compare(Message o1, Message o2) {
-                return o1.getTimestamp().compareTo(o2.getTimestamp());
-            }
-        });
+        Collections.sort(messages, Comparator.comparing(Message::getTimestamp));
 
         List<CrmMessage> list = new ArrayList<>();
         messages.forEach(message -> {
