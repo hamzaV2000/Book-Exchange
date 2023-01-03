@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import com.example.crm.CrmMessage;
+import com.example.demo.exception_handling.MyErrorResponse;
 import com.example.demo.exception_handling.MyException;
 import com.example.entity.BookExchange;
 import com.example.entity.ExchangeStatus;
@@ -10,10 +11,12 @@ import com.example.services.BookExchangeService;
 import com.example.services.MessageService;
 import com.example.services.UserService;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.*;
 
 @RestController
@@ -31,7 +34,7 @@ public class MessageController {
     }
 
     @PostMapping("/send")
-    private String sendMessage(@Valid @RequestBody CrmMessage crmMessage, Principal principal){
+    private ResponseEntity<?> sendMessage(@Valid @RequestBody CrmMessage crmMessage, Principal principal){
         User user  = Utility.getUser(principal, userService);
 
         BookExchange bookExchange = bookExchangeService.findById(crmMessage.getBookExchange_id());
@@ -47,11 +50,11 @@ public class MessageController {
 
         messageService.save(message);
 
-        return "sent successfully";
+        return ResponseEntity.ok(new MyErrorResponse(200, "sent successfully", LocalDate.now()));
     }
 
     @GetMapping("/conversation")
-    private List<CrmMessage> conversation(Principal principal, @RequestParam Long exchange_id){
+    private ResponseEntity<?> conversation(Principal principal, @RequestParam Long exchange_id){
         User user  = Utility.getUser(principal, userService);
         BookExchange bookExchange = bookExchangeService.findById(exchange_id);
 
@@ -73,6 +76,6 @@ public class MessageController {
 
             list.add(crmMessage);
         });
-        return list;
+        return ResponseEntity.ok(list);
     }
 }

@@ -19,10 +19,8 @@ import java.util.logging.Logger;
 
 @RestController
 public class RegistrationController {
-	
     @Autowired
     private UserService userService;
-
 
     private final Logger logger = Logger.getLogger(getClass().getName());
     
@@ -59,7 +57,7 @@ public class RegistrationController {
 			return ResponseEntity.badRequest().body(new MyErrorResponse(400, sb.toString().substring(0, sb.length() - 1), LocalDate.now()));
 
 		userService.save(s);
-		return ResponseEntity.ok("success");
+		return ResponseEntity.ok(new MyErrorResponse(200, "registered successfully", LocalDate.now()));
 	}
 
 }

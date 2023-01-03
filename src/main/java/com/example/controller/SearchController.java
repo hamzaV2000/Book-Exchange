@@ -20,13 +20,13 @@ public class SearchController {
     private final String serverIP = "http://176.29.9.132/python";
 
     @GetMapping("")
-    private String bookSearch(@RequestParam String domain, @RequestParam String query)  {
+    private ResponseEntity<?> bookSearch(@RequestParam String domain, @RequestParam String query)  {
         try {
             URL url = new URL(serverIP + "/search/" + domain + "/" + query);
             String res = getResponseContent(url);
             if(res.contains("not found"))
                 throw new MyException("not found");
-            return res;
+            return ResponseEntity.ok(res);
         } catch (MalformedURLException e) {
             throw new MyException("Problem with Server");
         } catch (IOException e) {

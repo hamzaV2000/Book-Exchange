@@ -1,12 +1,14 @@
 package com.example.controller;
 
 
+import com.example.demo.exception_handling.MyErrorResponse;
 import com.example.demo.exception_handling.MyException;
 import com.example.demo.jwt.JwtUtil;
 import com.example.entity.UserToken;
 import com.example.services.UserService;
 import com.example.services.UserTokenService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -103,7 +106,7 @@ public class AuthController {
                 }
             }
         }
-        return ResponseEntity.badRequest().body("Token is needed");
+        return ResponseEntity.badRequest().body(new MyErrorResponse(HttpStatus.BAD_REQUEST.value(),"Token is needed", LocalDate.now()));
     }
 
 }

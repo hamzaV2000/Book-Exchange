@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import com.example.demo.exception_handling.MyErrorResponse;
 import com.example.entity.*;
 import com.example.services.*;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import java.net.URL;
 import java.security.Principal;
 import java.sql.SQLOutput;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Set;
 
 import static com.example.controller.Utility.getResponseContent;
@@ -56,18 +58,18 @@ public class UserPageController {
 
 
     @GetMapping("/favorites")
-    private String getFavorites(Principal principal) throws IOException {
+    private ResponseEntity<?> getFavorites(Principal principal) throws IOException {
 
         user = getUser(principal, userService);
 
         URL url = new URL(serverIP + "/userFavorites/" + user.getId());
 
-        return getResponseContent(url);
+        return ResponseEntity.ok(getResponseContent(url));
     }
 
 
     @GetMapping("/owned")
-    private Set<OwnedBook> getOwned(Principal principal){
+    private ResponseEntity<?> getOwned(Principal principal){
 
         user = getUser(principal, userService);
 
@@ -76,10 +78,9 @@ public class UserPageController {
         user.getOwnedBookSet().forEach(book ->{
             book.setUser(null);
             book.getBook().getRating().setBook(null);
-
         });
 
-        return  user.getOwnedBookSet();
+        return  ResponseEntity.ok(user.getOwnedBookSet());
     }
 
 
@@ -91,7 +92,7 @@ public class UserPageController {
 
         Book book = bookService.findById(book_id);
         if(book == null)
-            return ResponseEntity.badRequest().body("failed");
+            return ResponseEntity.badRequest().body(new MyErrorResponse(400, "failed to add book", LocalDate.now()));
 
         OwnedBook ownedBook = new OwnedBook();
         ownedBook.setBook(book);
@@ -99,7 +100,7 @@ public class UserPageController {
         ownedBook.setAvaliable(false);
         ownedBookService.save(ownedBook);
         user.getOwnedBookSet().add(ownedBook);
-        return ResponseEntity.ok("success");
+        return ResponseEntity.ok(new MyErrorResponse(200, "added successfully", LocalDate.now()));
     }
 
 
@@ -111,7 +112,7 @@ public class UserPageController {
 
         Book book = bookService.findById(book_id);
         if(book == null)
-            return ResponseEntity.badRequest().body("failed");
+            return ResponseEntity.badRequest().body(new MyErrorResponse(400, "failed to rate book", LocalDate.now()));
 
 
         Review review = new Review();
@@ -128,7 +129,7 @@ public class UserPageController {
         reviewService.save(review);
 
 
-        return ResponseEntity.ok("success");
+        return ResponseEntity.ok(new MyErrorResponse(200, "rated successful", LocalDate.now()));
     }
 
 
@@ -139,9 +140,12 @@ public class UserPageController {
         user = getUser(principal, userService);
 
         OwnedBook book = ownedBookService.findOwnedBookByBookAndUser(bookService.findById(book_id), user);
+        if(book == null)
+            return ResponseEntity.badRequest().body(new MyErrorResponse(400, "you don't own this book", LocalDate.now()));
+
         book.setAvaliable(available);
         ownedBookService.save(book);
 
-        return ResponseEntity.ok("success");
+        return ResponseEntity.ok(new MyErrorResponse(200, available ? "your book is available" : "your book is unavailable", LocalDate.now()));
     }
 }

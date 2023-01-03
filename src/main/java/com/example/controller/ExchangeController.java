@@ -1,6 +1,7 @@
 package com.example.controller;
 
 
+import com.example.demo.exception_handling.MyErrorResponse;
 import com.example.entity.*;
 import com.example.services.BookExchangeService;
 import com.example.services.BookService;
@@ -8,11 +9,14 @@ import com.example.services.OwnedBookService;
 import com.example.services.UserService;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.net.URL;
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +42,7 @@ public class ExchangeController {
     }
 
     @GetMapping("/booksForExchange")
-    private Map<Long, Long> booksForExchange(Principal principal) throws IOException {
+    private ResponseEntity<?> booksForExchange(Principal principal) throws IOException {
         User user  = Utility.getUser(principal, userService);
 
         URL url = new URL(serverIP + "/recommendBySimilarUsers/" + user.getId());
@@ -65,10 +69,10 @@ public class ExchangeController {
 
         });
 
-        return map;
+        return ResponseEntity.ok(map);
     }
     @PostMapping("/initExchange")
-    private String initExchange(Principal principal, @RequestParam Long his_book_id, @RequestParam Long my_book_id){
+    private ResponseEntity<?> initExchange(Principal principal, @RequestParam Long his_book_id, @RequestParam Long my_book_id){
         OwnedBook myBook = ownedBookService.findById(my_book_id);
         OwnedBook ownerBook = ownedBookService.findById(his_book_id);
 
@@ -76,7 +80,7 @@ public class ExchangeController {
         User him = userService.findById(ownerBook.getUser().getId());
 
         if(user.getId() != myBook.getUser().getId() || him.getId() != ownerBook.getUser().getId() || user.getId() == him.getId() || my_book_id == his_book_id)
-            return "failed";
+            return ResponseEntity.badRequest().body(new MyErrorResponse(HttpStatus.BAD_REQUEST.value(),"initExchange Failed.", LocalDate.now()));
 
 
         BookExchange bookExchange = new BookExchange();
@@ -91,11 +95,11 @@ public class ExchangeController {
 
         bookExchangeService.save(bookExchange);
 
-        return "success";
+        return ResponseEntity.ok(new MyErrorResponse(200, "init Exchange was successful", LocalDate.now()));
     }
 
     @GetMapping("/exchangesFromPeople")
-    private List<BookExchange> getExchangesFromPeople(Principal principal){
+    private ResponseEntity<?> getExchangesFromPeople(Principal principal){
         User user  = Utility.getUser(principal, userService);
         List<BookExchange> list =new ArrayList<>();
         bookExchangeService.findAllByHim(user).forEach(bookExchange -> {
@@ -103,23 +107,23 @@ public class ExchangeController {
                 list.add(bookExchange);
         });
 
-        return list;
+        return ResponseEntity.ok(list);
     }
     @GetMapping("/exchangesFromMe")
-    private List<BookExchange> getExchangesFromMe(Principal principal){
+    private ResponseEntity<?> getExchangesFromMe(Principal principal){
         User user  = Utility.getUser(principal, userService);
         List<BookExchange> list = bookExchangeService.findAllByMe(user);
 
-        return list;
+        return ResponseEntity.ok(list);
     }
     @PostMapping("/acceptExchange")
-    private String acceptExchange(Principal principal, @RequestParam Long exchange_id, @RequestParam Boolean accept){
+    private ResponseEntity<?> acceptExchange(Principal principal, @RequestParam Long exchange_id, @RequestParam Boolean accept){
 
         User user  = Utility.getUser(principal, userService);
         BookExchange bookExchange = bookExchangeService.findById(exchange_id);
         System.out.println(bookExchange);
         if(bookExchange.getHim().getId() != user.getId() || bookExchange.getHisBook().getUser().getId() != user.getId())
-            return "failed";
+            return ResponseEntity.badRequest().body(new MyErrorResponse(400,"exchange request failed.", LocalDate.now()));
 
         if(accept){
             bookExchange.setStatus(ExchangeStatus.FINISHED);
@@ -127,12 +131,14 @@ public class ExchangeController {
             bookExchange.getMyBook().setUser(bookExchange.getHim());
             ownedBookService.save(bookExchange.getHisBook());
             ownedBookService.save(bookExchange.getMyBook());
+            bookExchangeService.save(bookExchange);
+            return ResponseEntity.ok(new MyErrorResponse(200, "exchange accepted successfully.", LocalDate.now()));
         }else{
             bookExchange.setStatus(ExchangeStatus.FAILED);
-        }
+            bookExchangeService.save(bookExchange);
+            return ResponseEntity.ok(new MyErrorResponse(200,"exchange rejected successfully.", LocalDate.now()));
 
-        bookExchangeService.save(bookExchange);
-        return "exchange: " + (accept ? "accepted" : "rejected") + ", successfully.";
+        }
     }
 
 

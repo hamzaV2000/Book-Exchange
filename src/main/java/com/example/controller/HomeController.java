@@ -6,6 +6,7 @@ import com.example.entity.*;
 import com.example.services.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -21,13 +22,7 @@ public class HomeController {
     private final String serverIP = "http://176.29.9.132/python";
     private User user = null;
     private final UserService userService;
-
-
-
     private final ReviewService reviewService;
-
-
-
 
     public HomeController(UserService userService, ReviewService reviewService) {
         this.userService = userService;
@@ -40,7 +35,7 @@ public class HomeController {
     }
 
     @GetMapping("/basedOnYourInterests")
-    private String basedOnYourInterests(Principal principal) throws IOException {
+    private ResponseEntity<?> basedOnYourInterests(Principal principal) throws IOException {
 
         user = Utility.getUser(principal, userService);
 
@@ -51,7 +46,7 @@ public class HomeController {
             if(user.getInterest() != null){
 
                 URL url = new URL(serverIP + "/search/genre/" + user.getInterest());
-                return getResponseContent(url);
+                return ResponseEntity.ok(getResponseContent(url));
             }else{
                 throw new MyException("Specify Interests or Rate books");
             }
@@ -65,26 +60,23 @@ public class HomeController {
                 }
             });
             URL url = new URL(serverIP + "/search/genre/" + genres.toString().replace("[", "").replace("]", ""));
-            return getResponseContent(url);
+            return ResponseEntity.ok(getResponseContent(url));
         }
     }
 
     @GetMapping("/recommendBySimilarUsers")
-    public String bySimilarUsers(Principal principal) throws IOException {
-
-
+    public ResponseEntity<?> bySimilarUsers(Principal principal) throws IOException {
         user = Utility.getUser(principal, userService);
-
         URL url = new URL(serverIP + "/recommendBySimilarUsers/" + user.getId());
-        return getResponseContent(url);
+
+        return ResponseEntity.ok(getResponseContent(url));
     }
 
     @GetMapping("/top10")
-    private String getTop10() throws IOException {
-
+    private ResponseEntity<?> getTop10() throws IOException {
         URL url = new URL(serverIP + "/topn");
 
-        return getResponseContent(url);
+        return ResponseEntity.ok(getResponseContent(url));
     }
 
 
