@@ -72,7 +72,9 @@ public class ExchangeController {
         return ResponseEntity.ok(map);
     }
     @PostMapping("/initExchange")
-    private ResponseEntity<?> initExchange(Principal principal, @RequestParam Long his_book_id, @RequestParam Long my_book_id){
+    private ResponseEntity<?> initExchange(Principal principal,
+                                           @RequestParam Long his_book_id,
+                                           @RequestParam Long my_book_id){
         OwnedBook myBook = ownedBookService.findById(my_book_id);
         OwnedBook ownerBook = ownedBookService.findById(his_book_id);
 
@@ -117,7 +119,9 @@ public class ExchangeController {
         return ResponseEntity.ok(list);
     }
     @PostMapping("/acceptExchange")
-    private ResponseEntity<?> acceptExchange(Principal principal, @RequestParam Long exchange_id, @RequestParam Boolean accept){
+    private ResponseEntity<?> acceptExchange(Principal principal,
+                                             @RequestParam Long exchange_id,
+                                             @RequestParam Boolean accept){
 
         User user  = Utility.getUser(principal, userService);
         BookExchange bookExchange = bookExchangeService.findById(exchange_id);

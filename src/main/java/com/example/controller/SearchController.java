@@ -20,7 +20,8 @@ public class SearchController {
     private final String serverIP = "http://176.29.9.132/python";
 
     @GetMapping("")
-    private ResponseEntity<?> bookSearch(@RequestParam String domain, @RequestParam String query)  {
+    private ResponseEntity<?> bookSearch
+            (@RequestParam String domain, @RequestParam String query)  {
         try {
             URL url = new URL(serverIP + "/search/" + domain + "/" + query);
             String res = getResponseContent(url);

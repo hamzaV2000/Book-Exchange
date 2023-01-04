@@ -106,7 +106,8 @@ public class UserPageController {
 
     @ResponseBody
     @PostMapping("/rateBook")
-    private ResponseEntity<?> rateBook(@RequestParam Long book_id, @RequestParam byte rating, Principal principal){
+    private ResponseEntity<?> rateBook
+            (@RequestParam Long book_id, @RequestParam byte rating, Principal principal){
 
         user = getUser(principal, userService);
 
@@ -135,7 +136,8 @@ public class UserPageController {
 
     @ResponseBody
     @PostMapping("/makeBookAvailable")
-    private ResponseEntity<?> makeBookAvailable(@RequestParam Long book_id , @RequestParam Boolean available, Principal principal){
+    private ResponseEntity<?> makeBookAvailable
+            (@RequestParam Long book_id , @RequestParam Boolean available, Principal principal){
 
         user = getUser(principal, userService);
 

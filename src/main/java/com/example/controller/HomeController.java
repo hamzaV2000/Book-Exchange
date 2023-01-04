@@ -16,6 +16,7 @@ import java.util.*;
 
 import static com.example.controller.Utility.getResponseContent;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/home")
 public class HomeController {
