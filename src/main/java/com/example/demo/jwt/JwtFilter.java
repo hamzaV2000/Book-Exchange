@@ -1,6 +1,5 @@
 package com.example.demo.jwt;
 
-import com.example.demo.config.CorsFilter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,7 +22,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
-    private final Logger log = LoggerFactory.getLogger(CorsFilter.class);
+    private final Logger log = LoggerFactory.getLogger(JwtFilter.class);
 
     private final UserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;

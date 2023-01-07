@@ -65,11 +65,11 @@ public class JwtUtil {
                 Jwts.builder()
                         .setClaims(claims)
                         .setSubject(subject.getUsername()).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 2))// 2 hours
+                .setExpiration(new Date(System.currentTimeMillis() + 1000l * 60l * 60l * 24l * 30l))// month
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
 
         String refresh_token = Jwts.builder().setClaims(null).setSubject(subject.getUsername()).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))// 24 hours
+                .setExpiration(new Date(System.currentTimeMillis() + 1000l * 60l * 60l * 24l * 30l))// month
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
         tokens.put("access_token" , access_token);
         tokens.put("refresh_token", refresh_token);
