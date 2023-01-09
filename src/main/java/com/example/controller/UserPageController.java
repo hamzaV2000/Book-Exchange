@@ -1,26 +1,25 @@
 package com.example.controller;
 
+import com.example.crm.CrmUser;
 import com.example.demo.exception_handling.MyErrorResponse;
 import com.example.entity.*;
 import com.example.services.*;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.net.URL;
 import java.security.Principal;
-import java.sql.SQLOutput;
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.util.Set;
 
-import static com.example.controller.Utility.getResponseContent;
-import static com.example.controller.Utility.getUser;
+import static com.example.controller.Utility.*;
 
 @RestController
 @RequestMapping("/profile")
 public class UserPageController {
-    private final String serverIP = "http://176.29.9.132/python";
 
     private User user = null;
 
@@ -32,8 +31,10 @@ public class UserPageController {
 
     private final RatingService ratingService;
 
+    private final UserTokenService userTokenService;
 
-    public UserPageController(UserService userService, OwnedBookService ownedBookService, BookService bookService, ReviewService reviewService, ReviewChangesService reviewChangesService, RatingService ratingService) {
+
+    public UserPageController(UserService userService, OwnedBookService ownedBookService, BookService bookService, ReviewService reviewService, ReviewChangesService reviewChangesService, RatingService ratingService, UserTokenService userTokenService) {
         this.userService = userService;
         this.ownedBookService = ownedBookService;
         this.bookService = bookService;
@@ -41,6 +42,7 @@ public class UserPageController {
         this.reviewChangesService = reviewChangesService;
         this.ratingService = ratingService;
 
+        this.userTokenService = userTokenService;
     }
 
     @GetMapping("/user")
@@ -56,13 +58,45 @@ public class UserPageController {
 
     }
 
+    @PutMapping("/editUser")
+    private ResponseEntity<?> editUserInfo(@Valid @RequestBody CrmUser s, BindingResult bindingResult, Principal principal){
+        User newUser = getUser(principal, userService);
+        UserToken userToken = userTokenService.findUserTokenByUserName(newUser.getUserName());
+
+        String emailExist = null;
+        String usernameExist = null;
+        if(s.getEmail() != null && userService.findByEmail(s.getEmail()) != null && !s.getEmail().equals(newUser.getEmail()))
+            emailExist = "Email already exists";
+
+        if(s.getUserName() != null && userService.findByUserName(s.getUserName()) != null && !s.getUserName().equals(newUser.getUserName()))
+            usernameExist = "username already exists";
+
+        StringBuilder sb = new StringBuilder();
+
+        if(bindingResult.hasErrors()){
+            bindingResult.getAllErrors().forEach(objectError -> sb.append(objectError.getDefaultMessage()+','));
+        }
+
+        if(emailExist != null)
+            sb.append(emailExist + ',');
+        if(usernameExist != null)
+            sb.append(usernameExist + ',');
+
+
+        if(!sb.toString().equals(""))
+            return ResponseEntity.badRequest().body(new MyErrorResponse(400, sb.toString().substring(0, sb.length() - 1), LocalDate.now()));
+
+        userService.save(s, newUser);
+        userTokenService.delete(userToken);
+        return ResponseEntity.ok(new MyErrorResponse(200, "Edited Successfully.", LocalDate.now()));
+    }
 
     @GetMapping("/favorites")
     private ResponseEntity<?> getFavorites(Principal principal) throws IOException {
 
         user = getUser(principal, userService);
-
-        URL url = new URL(serverIP + "/userFavorites/" + user.getId());
+        System.out.printf(IP_ADDRESS + "/userFavorites/" + user.getId());
+        URL url = new URL(IP_ADDRESS + "/userFavorites/" + user.getId());
 
         return ResponseEntity.ok(getResponseContent(url));
     }

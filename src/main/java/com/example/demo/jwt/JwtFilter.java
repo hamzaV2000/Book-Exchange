@@ -1,5 +1,6 @@
 package com.example.demo.jwt;
 
+import com.example.demo.exception_handling.MyErrorResponse;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Enumeration;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -40,19 +42,30 @@ public class JwtFilter extends OncePerRequestFilter {
     {
         log.info("jwt filter");
         final String authHeader = request.getHeader(AUTHORIZATION);
-        final String userEmail;
+        String userEmail = null;
         final String jwtToken;
 
-        Enumeration<String> headers = request.getHeaderNames();
-        while(headers.hasMoreElements())
-            System.out.println(headers.nextElement());
+//        Enumeration<String> headers = request.getHeaderNames();
+//        while(headers.hasMoreElements())
+//            System.out.println(headers.nextElement());
+
         if(authHeader == null || !authHeader.startsWith("Bearer")){
             log.info("auth header is null");
             filterChain.doFilter(request, response);
             return;
         }
         jwtToken = authHeader.substring(7);
-        userEmail = jwtUtil.extractUsername(jwtToken);
+
+        try{
+            userEmail = jwtUtil.extractUsername(jwtToken);
+        }catch (Exception e){
+            response.setContentType("application/json");
+            response.setStatus(400);
+            response.getWriter().write(new MyErrorResponse(400, "Invalid Token", LocalDate.now()).toString());
+            response.getWriter().flush();
+
+        }
+
         if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null){
             UserDetails userDetails
                     = userDetailsService.loadUserByUsername(userEmail);
@@ -63,8 +76,15 @@ public class JwtFilter extends OncePerRequestFilter {
                         (userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+                filterChain.doFilter(request, response);
+            }else {
+                response.setContentType("application/json");
+                response.setStatus(400);
+                response.getWriter().write(new MyErrorResponse(400, "Invalid Token", LocalDate.now()).toString());
+                response.getWriter().flush();
+
             }
         }
-        filterChain.doFilter(request, response);
+
     }
 }

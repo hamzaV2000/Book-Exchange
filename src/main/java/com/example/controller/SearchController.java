@@ -12,18 +12,19 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import static com.example.controller.Utility.IP_ADDRESS;
 import static com.example.controller.Utility.getResponseContent;
 
 @RestController
 @RequestMapping("/search")
 public class SearchController {
-    private final String serverIP = "http://176.29.9.132/python";
+
 
     @GetMapping("")
     private ResponseEntity<?> bookSearch
             (@RequestParam String domain, @RequestParam String query)  {
         try {
-            URL url = new URL(serverIP + "/search/" + domain + "/" + query);
+            URL url = new URL(IP_ADDRESS + "/search/" + domain + "/" + query);
             String res = getResponseContent(url);
             if(res.contains("not found"))
                 throw new MyException("not found");

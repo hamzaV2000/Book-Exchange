@@ -7,7 +7,7 @@ public interface UserService extends CrudService<User, Long>{
 
     User findByUserName(String userName);
 
-    void save(CrmUser theCrmUser);
+    void save(CrmUser theCrmUser, User user);
 
     User findByEmail(String email);
 }

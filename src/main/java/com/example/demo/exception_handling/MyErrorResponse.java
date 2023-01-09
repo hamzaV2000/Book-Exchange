@@ -42,4 +42,13 @@ public class MyErrorResponse  {
 	public void setTimstamp(LocalDate timstamp) {
 		this.timstamp = timstamp;
 	}
+
+	@Override
+	public String toString() {
+		return "{" +
+				"\"status\":" + status +
+				",\"message\":\"" + message + "\"" +
+				", \"timstamp\":\"" + timstamp + "\""  +
+				'}';
+	}
 }

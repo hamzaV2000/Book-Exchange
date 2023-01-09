@@ -22,13 +22,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.example.controller.Utility.getResponseContent;
+import static com.example.controller.Utility.*;
 
 @RestController
 @RequestMapping("/exchange")
 public class ExchangeController {
 
-    private final String serverIP = "http://176.29.9.132/python";
+
     private final OwnedBookService ownedBookService;
     private final UserService userService;
     private final BookExchangeService bookExchangeService;
@@ -45,7 +45,7 @@ public class ExchangeController {
     private ResponseEntity<?> booksForExchange(Principal principal) throws IOException {
         User user  = Utility.getUser(principal, userService);
 
-        URL url = new URL(serverIP + "/recommendBySimilarUsers/" + user.getId());
+        URL url = new URL(IP_ADDRESS + "/recommendBySimilarUsers/" + user.getId());
 
         String json = getResponseContent(url);
         Map<Long, Long> map = new HashMap<>();

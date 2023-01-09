@@ -1,5 +1,6 @@
 package com.example.demo.jwt;
 
+import com.example.demo.exception_handling.MyException;
 import com.example.entity.User;
 import com.example.entity.UserToken;
 import com.example.services.UserService;
@@ -7,6 +8,7 @@ import com.example.services.UserTokenService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -45,7 +47,13 @@ public class JwtUtil {
         return claimsResolver.apply(claims);
     }
     public Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+        Claims claims = null;
+        try{
+            claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+        }catch (SignatureException e){
+            throw  new MyException("not valid jwt");
+        }
+        return claims;
     }
 
     public Boolean isTokenExpired(String token) {
@@ -90,8 +98,7 @@ public class JwtUtil {
         });
 
         UserToken userToken = userTokenService.findUserTokenByUserName(username);
-        System.out.println(token + " \n" + userToken.getAccess_token());
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token) && userToken.getAccess_token().equals(token));
+        return ( userToken != null && userToken.getAccess_token() != null && username.equals(userDetails.getUsername()) && !isTokenExpired(token) && userToken.getAccess_token().equals(token));
     }
     public Boolean validateRefreshToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
@@ -101,7 +108,6 @@ public class JwtUtil {
             return false;
 
         UserToken userToken = userTokenService.findUserTokenByUserName(username);
-
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token) &&  userToken.getRefresh_token().equals(token));
+        return (userToken != null && userToken.getAccess_token() != null && username.equals(userDetails.getUsername()) && !isTokenExpired(token) &&  userToken.getRefresh_token().equals(token));
     }
 }

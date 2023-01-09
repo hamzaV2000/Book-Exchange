@@ -38,7 +38,7 @@ public class UserTokenServiceImpl implements UserTokenService {
 
     @Override
     public void delete(UserToken object) {
-
+        userTokenRepository.delete(object);
     }
 
     @Override

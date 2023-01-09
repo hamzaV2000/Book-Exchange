@@ -14,13 +14,14 @@ import java.net.URL;
 import java.security.Principal;
 import java.util.*;
 
+import static com.example.controller.Utility.IP_ADDRESS;
 import static com.example.controller.Utility.getResponseContent;
 
 
 @RestController
 @RequestMapping("/home")
 public class HomeController {
-    private final String serverIP = "http://176.29.9.132/python";
+
     private User user = null;
     private final UserService userService;
     private final ReviewService reviewService;
@@ -46,7 +47,7 @@ public class HomeController {
 
             if(user.getInterest() != null){
 
-                URL url = new URL(serverIP + "/search/genre/" + user.getInterest());
+                URL url = new URL(IP_ADDRESS + "/search/genre/" + user.getInterest());
                 return ResponseEntity.ok(getResponseContent(url));
             }else{
                 throw new MyException("Specify Interests or Rate books");
@@ -60,7 +61,7 @@ public class HomeController {
                     });
                 }
             });
-            URL url = new URL(serverIP + "/search/genre/" + genres.toString().replace("[", "").replace("]", ""));
+            URL url = new URL(IP_ADDRESS + "/search/genre/" + genres.toString().replace("[", "").replace("]", ""));
             return ResponseEntity.ok(getResponseContent(url));
         }
     }
@@ -68,14 +69,14 @@ public class HomeController {
     @GetMapping("/recommendBySimilarUsers")
     public ResponseEntity<?> bySimilarUsers(Principal principal) throws IOException {
         user = Utility.getUser(principal, userService);
-        URL url = new URL(serverIP + "/recommendBySimilarUsers/" + user.getId());
+        URL url = new URL(IP_ADDRESS + "/recommendBySimilarUsers/" + user.getId());
 
         return ResponseEntity.ok(getResponseContent(url));
     }
 
     @GetMapping("/top10")
     private ResponseEntity<?> getTop10() throws IOException {
-        URL url = new URL(serverIP + "/topn");
+        URL url = new URL(IP_ADDRESS + "/topn");
 
         return ResponseEntity.ok(getResponseContent(url));
     }

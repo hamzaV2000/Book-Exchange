@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import com.example.crm.CrmConvExchange;
 import com.example.crm.CrmMessage;
 import com.example.demo.exception_handling.MyErrorResponse;
 import com.example.demo.exception_handling.MyException;
@@ -77,5 +78,45 @@ public class MessageController {
             list.add(crmMessage);
         });
         return ResponseEntity.ok(list);
+    }
+
+    @GetMapping("/allConversations")
+    private ResponseEntity<?> allConversations(Principal principal){
+        User user  = Utility.getUser(principal, userService);
+
+        List<CrmConvExchange> list_final = new ArrayList<>();
+
+        bookExchangeService.findAllByMe(user).forEach(bookExchange -> {
+            if(bookExchange.getStatus() == ExchangeStatus.ON_GOING){
+                CrmConvExchange crmConvExchange = new CrmConvExchange();
+
+                crmConvExchange.setExchange_id(bookExchange.getId());
+                crmConvExchange.setImage(bookExchange.getHim().getProfileImageUrl());
+                crmConvExchange.setUsername(bookExchange.getHim().getUserName());
+                crmConvExchange.setHis_book_id(bookExchange.getHisBook().getBook().getId());
+                crmConvExchange.setMy_book_id(bookExchange.getMyBook().getBook().getId());
+                crmConvExchange.setInitiator(user.getUserName());
+
+                list_final.add(crmConvExchange);
+            }
+
+        });
+        bookExchangeService.findAllByHim(user).forEach(bookExchange -> {
+            if(bookExchange.getStatus() == ExchangeStatus.ON_GOING){
+                CrmConvExchange crmConvExchange = new CrmConvExchange();
+
+                crmConvExchange.setExchange_id(bookExchange.getId());
+                crmConvExchange.setImage(bookExchange.getMe().getProfileImageUrl());
+                crmConvExchange.setUsername(bookExchange.getMe().getUserName());
+                crmConvExchange.setHis_book_id(bookExchange.getMyBook().getBook().getId());
+                crmConvExchange.setMy_book_id(bookExchange.getHisBook().getBook().getId());
+                crmConvExchange.setInitiator(crmConvExchange.getUsername());
+
+                list_final.add(crmConvExchange);
+            }
+
+        });
+        System.out.println(list_final + " " + list_final.size());
+        return ResponseEntity.ok(list_final);
     }
 }

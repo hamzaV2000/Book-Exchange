@@ -56,7 +56,7 @@ public class RegistrationController {
 		if(!sb.toString().equals(""))
 			return ResponseEntity.badRequest().body(new MyErrorResponse(400, sb.toString().substring(0, sb.length() - 1), LocalDate.now()));
 
-		userService.save(s);
+		userService.save(s, null);
 		return ResponseEntity.ok(new MyErrorResponse(200, "registered successfully", LocalDate.now()));
 	}
 

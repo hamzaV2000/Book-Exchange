@@ -33,6 +33,6 @@ public class CorsFilter implements Filter{
         if(request.getMethod().equals("OPTIONS"))
             response.setStatus(HttpServletResponse.SC_OK);
         else
-        filterChain.doFilter(request, response);
+            filterChain.doFilter(request, response);
     }
 }

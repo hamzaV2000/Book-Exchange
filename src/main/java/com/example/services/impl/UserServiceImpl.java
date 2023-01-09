@@ -62,9 +62,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void save(CrmUser theCrmUser) {
+    public void save(CrmUser theCrmUser, User user) {
 
-        User user = new User();
+        if(user == null)
+            user = new User();
         user.setPassword(theCrmUser.getPassword());
         user.setLastLoginDate(LocalDate.now());
         user.setJoinDate(LocalDate.now());
