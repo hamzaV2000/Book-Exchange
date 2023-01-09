@@ -17,7 +17,7 @@ import java.security.Principal;
 public class Utility {
 
 
-    static String IP_ADDRESS;
+    static String IP_ADDRESS ;
     private Utility (){
 
         URL whatismyip = null;
@@ -58,6 +58,7 @@ public class Utility {
         in.close();
         return content.toString();
     }
+
 
 
 }

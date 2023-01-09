@@ -26,9 +26,12 @@ public class HomeController {
     private final UserService userService;
     private final ReviewService reviewService;
 
-    public HomeController(UserService userService, ReviewService reviewService) {
+    private final BookService bookService;
+
+    public HomeController(UserService userService, ReviewService reviewService, BookService bookService) {
         this.userService = userService;
         this.reviewService = reviewService;
+        this.bookService = bookService;
     }
 
     @GetMapping("")
@@ -47,8 +50,8 @@ public class HomeController {
 
             if(user.getInterest() != null){
 
-                URL url = new URL(IP_ADDRESS + "/search/genre/" + user.getInterest());
-                return ResponseEntity.ok(getResponseContent(url));
+                String url = IP_ADDRESS + "/search/genre/" + user.getInterest();
+                return ResponseEntity.ok(getBooksFromUrl(url));
             }else{
                 throw new MyException("Specify Interests or Rate books");
             }
@@ -61,8 +64,8 @@ public class HomeController {
                     });
                 }
             });
-            URL url = new URL(IP_ADDRESS + "/search/genre/" + genres.toString().replace("[", "").replace("]", ""));
-            return ResponseEntity.ok(getResponseContent(url));
+            String url = IP_ADDRESS + "/search/genre/" + genres.toString().replace("[", "").replace("]", "");
+            return ResponseEntity.ok(getBooksFromUrl(url));
         }
     }
 
@@ -70,15 +73,33 @@ public class HomeController {
     public ResponseEntity<?> bySimilarUsers(Principal principal) throws IOException {
         user = Utility.getUser(principal, userService);
         URL url = new URL(IP_ADDRESS + "/recommendBySimilarUsers/" + user.getId());
-
-        return ResponseEntity.ok(getResponseContent(url));
+        String res = getResponseContent(url);
+        JSONArray array = new JSONArray(res);
+        List<Book> list = new ArrayList<>();
+        array.forEach(jsonObject->{
+            JSONObject json = (JSONObject) jsonObject;
+            Long id = json.getLong("book_id");
+            Book book = bookService.findById(id);
+            list.add(book);
+        });
+        return ResponseEntity.ok(list);
     }
 
     @GetMapping("/top10")
     private ResponseEntity<?> getTop10() throws IOException {
-        URL url = new URL(IP_ADDRESS + "/topn");
 
-        return ResponseEntity.ok(getResponseContent(url));
+        return ResponseEntity.ok(getBooksFromUrl(IP_ADDRESS + "/topn"));
+    }
+    private List<Book> getBooksFromUrl(String surl) throws IOException {
+        URL url = new URL(surl);
+        List<Book> list = new ArrayList<>();
+        String res[] = getResponseContent(url).replace("[", "").replace("]","").split(",");
+        Arrays.stream(res).forEach(str->{
+            Long id = Double.valueOf(str).longValue();
+            Book book = bookService.findById(id);
+            list.add(book);
+        });
+        return list;
     }
 
 
