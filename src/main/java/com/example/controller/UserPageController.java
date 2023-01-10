@@ -59,10 +59,10 @@ public class UserPageController {
     }
 
     @PutMapping("/editUser")
-    private ResponseEntity<?> editUserInfo(@Valid @RequestBody CrmUser s, BindingResult bindingResult, Principal principal){
+    private ResponseEntity<?> editUserInfo(@RequestBody CrmUser s, BindingResult bindingResult, Principal principal){
         User newUser = getUser(principal, userService);
         UserToken userToken = userTokenService.findUserTokenByUserName(newUser.getUserName());
-
+        System.out.println("before checking email ");
         String emailExist = null;
         String usernameExist = null;
         if(s.getEmail() != null && userService.findByEmail(s.getEmail()) != null && !s.getEmail().equals(newUser.getEmail()))
@@ -71,21 +71,22 @@ public class UserPageController {
         if(s.getUserName() != null && userService.findByUserName(s.getUserName()) != null && !s.getUserName().equals(newUser.getUserName()))
             usernameExist = "username already exists";
 
-        StringBuilder sb = new StringBuilder();
+        if(emailExist != null || usernameExist != null){
 
-        if(bindingResult.hasErrors()){
-            bindingResult.getAllErrors().forEach(objectError -> sb.append(objectError.getDefaultMessage()+','));
+            StringBuilder sb = new StringBuilder();
+
+            if(emailExist != null)
+                sb.append(emailExist + ',');
+            if(usernameExist != null)
+                sb.append(usernameExist + ',');
+            System.out.println("invalid checking email ");
+            return ResponseEntity.badRequest().body(new MyErrorResponse(400, sb.toString().substring(0, sb.length() - 1), LocalDate.now()));
         }
 
-        if(emailExist != null)
-            sb.append(emailExist + ',');
-        if(usernameExist != null)
-            sb.append(usernameExist + ',');
 
 
-        if(!sb.toString().equals(""))
-            return ResponseEntity.badRequest().body(new MyErrorResponse(400, sb.toString().substring(0, sb.length() - 1), LocalDate.now()));
 
+        System.out.println("edit success ");
         userService.save(s, newUser);
         userTokenService.delete(userToken);
         return ResponseEntity.ok(new MyErrorResponse(200, "Edited Successfully.", LocalDate.now()));
@@ -136,7 +137,23 @@ public class UserPageController {
         user.getOwnedBookSet().add(ownedBook);
         return ResponseEntity.ok(new MyErrorResponse(200, "added successfully", LocalDate.now()));
     }
+    @ResponseBody
+    @PostMapping("/removeBookFromOwned")
+    private ResponseEntity<?> removeBookFromOwned(@RequestParam Long book_id, Principal principal){
+        user = getUser(principal, userService);
+        Book book = bookService.findById(book_id);
+        if(book == null)
+            return ResponseEntity.badRequest().body(new MyErrorResponse(400, "failed to find book.", LocalDate.now()));
 
+        OwnedBook ownedBook = ownedBookService.findOwnedBookByBookAndUser(book, user);
+
+        if(ownedBook == null)
+            return ResponseEntity.badRequest().body(new MyErrorResponse(400, "You don't own this book.", LocalDate.now()));
+
+        ownedBookService.delete(ownedBook);
+        return ResponseEntity.ok(new MyErrorResponse(200, "removed successfully", LocalDate.now()));
+
+    }
 
     @ResponseBody
     @PostMapping("/rateBook")

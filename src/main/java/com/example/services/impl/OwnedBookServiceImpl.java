@@ -34,7 +34,7 @@ public class OwnedBookServiceImpl implements OwnedBookService {
 
     @Override
     public void delete(OwnedBook object) {
-
+        ownedBookRepository.delete(object);
     }
 
     @Override

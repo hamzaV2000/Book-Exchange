@@ -66,17 +66,34 @@ public class UserServiceImpl implements UserService {
 
         if(user == null)
             user = new User();
-        user.setPassword(theCrmUser.getPassword());
+
+        if(theCrmUser.getPassword() != null)
+            user.setPassword(theCrmUser.getPassword());
+
         user.setLastLoginDate(LocalDate.now());
-        user.setJoinDate(LocalDate.now());
-        user.setUserName(theCrmUser.getUserName());
-        user.setCity(theCrmUser.getCity());
-        user.setLastName(theCrmUser.getLastName());
-        user.setFirstName(theCrmUser.getFirstName());
-        user.setProfileImageUrl(theCrmUser.getImage());
+
+        if(user.getJoinDate() == null)
+            user.setJoinDate(LocalDate.now());
+
+        if(theCrmUser.getUserName() != null)
+            user.setUserName(theCrmUser.getUserName());
+        if(theCrmUser.getCity() != null)
+            user.setCity(theCrmUser.getCity());
+        if(theCrmUser.getLastName() != null)
+            user.setLastName(theCrmUser.getLastName());
+        if(theCrmUser.getFirstName() != null)
+            user.setFirstName(theCrmUser.getFirstName());
+        if(theCrmUser.getImage() != null)
+            user.setProfileImageUrl(theCrmUser.getImage());
+
         user.setRoles(new HashSet<>(Collections.singletonList(roleRepository.findByRole("ROLE_USER"))));
-        user.setEmail(theCrmUser.getEmail());
-        user.setInterest(theCrmUser.getInterest());
+
+        if(theCrmUser.getEmail() != null)
+            user.setEmail(theCrmUser.getEmail());
+
+        if(theCrmUser.getInterest() != null)
+            user.setInterest(theCrmUser.getInterest());
+
         save(user);
     }
 

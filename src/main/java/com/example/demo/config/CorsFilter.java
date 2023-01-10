@@ -1,5 +1,6 @@
 package com.example.demo.config;
 
+import com.example.demo.exception_handling.MyException;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,7 +33,14 @@ public class CorsFilter implements Filter{
         response.setHeader("Access-Control-Allow-Headers", "*");
         if(request.getMethod().equals("OPTIONS"))
             response.setStatus(HttpServletResponse.SC_OK);
-        else
-            filterChain.doFilter(request, response);
+        else{
+            try{
+                filterChain.doFilter(request, response);
+            }catch (Exception e){
+                throw new MyException(e.getMessage());
+            }
+
+        }
+
     }
 }

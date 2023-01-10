@@ -1,6 +1,7 @@
 package com.example.demo.jwt;
 
 import com.example.demo.exception_handling.MyErrorResponse;
+import com.example.demo.exception_handling.MyException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -67,8 +69,12 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null){
-            UserDetails userDetails
-                    = userDetailsService.loadUserByUsername(userEmail);
+            UserDetails userDetails = null;
+            try{
+               userDetails = userDetailsService.loadUserByUsername(userEmail);
+            }catch (UsernameNotFoundException e){
+                throw new MyException("Username is not found please sign up.");
+            }
             final boolean isTokenValid = jwtUtil.validateToken(jwtToken, userDetails);
             if(isTokenValid){
                 UsernamePasswordAuthenticationToken
