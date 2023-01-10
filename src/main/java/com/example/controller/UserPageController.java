@@ -83,8 +83,11 @@ public class UserPageController {
             return ResponseEntity.badRequest().body(new MyErrorResponse(400, sb.toString().substring(0, sb.length() - 1), LocalDate.now()));
         }
 
-
-
+        if(s.getPassword() != null){
+            if(s.getMatchingPassword() == null || s.getMatchingPassword().equals(s.getPassword())){
+                return ResponseEntity.badRequest().body(new MyErrorResponse(400,"Passwords don't match." , LocalDate.now()));
+            }
+        }
 
         System.out.println("edit success ");
         userService.save(s, newUser);
