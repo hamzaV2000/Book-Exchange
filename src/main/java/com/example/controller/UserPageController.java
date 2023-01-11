@@ -14,6 +14,9 @@ import java.net.URL;
 import java.security.Principal;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static com.example.controller.Utility.*;
 
@@ -99,10 +102,8 @@ public class UserPageController {
     private ResponseEntity<?> getFavorites(Principal principal) throws IOException {
 
         user = getUser(principal, userService);
-        System.out.printf(IP_ADDRESS + "/userFavorites/" + user.getId());
-        URL url = new URL(IP_ADDRESS + "/userFavorites/" + user.getId());
-
-        return ResponseEntity.ok(getResponseContent(url));
+        //System.out.printf(IP_ADDRESS + "/userFavorites/" + user.getId());
+        return ResponseEntity.ok(getBooksFromUrl(IP_ADDRESS + "/userFavorites/" + user.getId()));
     }
 
 
@@ -203,5 +204,16 @@ public class UserPageController {
         ownedBookService.save(book);
 
         return ResponseEntity.ok(new MyErrorResponse(200, available ? "your book is available" : "your book is unavailable", LocalDate.now()));
+    }
+    private List<Book> getBooksFromUrl(String surl) throws IOException {
+        URL url = new URL(surl);
+        List<Book> list = new ArrayList<>();
+        String res[] = getResponseContent(url).replace("[", "").replace("]","").split(",");
+        Arrays.stream(res).forEach(str->{
+            Long id = Double.valueOf(str).longValue();
+            Book book = bookService.findById(id);
+            list.add(book);
+        });
+        return list;
     }
 }
