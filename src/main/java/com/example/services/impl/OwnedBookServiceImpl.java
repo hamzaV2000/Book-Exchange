@@ -39,11 +39,12 @@ public class OwnedBookServiceImpl implements OwnedBookService {
 
     @Override
     public void deleteById(Long aLong) {
-
+        ownedBookRepository.deleteById(aLong);
     }
 
     @Override
     public OwnedBook findOwnedBookByBookAndUser(Book book, User user) {
         return ownedBookRepository.findOwnedBookByBookAndUser(book, user);
     }
+
 }

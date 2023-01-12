@@ -154,7 +154,15 @@ public class UserPageController {
         if(ownedBook == null)
             return ResponseEntity.badRequest().body(new MyErrorResponse(400, "You don't own this book.", LocalDate.now()));
 
-        ownedBookService.delete(ownedBook);
+        ownedBookService.deleteById(ownedBook.getId());
+        for(OwnedBook b : user.getOwnedBookSet()){
+            if(b.getId() == ownedBook.getId()){
+                ownedBook = b;
+                break;
+            }
+        }
+        user.getOwnedBookSet().remove(ownedBook);
+        ownedBookService.deleteById(ownedBook.getId());
         return ResponseEntity.ok(new MyErrorResponse(200, "removed successfully", LocalDate.now()));
 
     }
