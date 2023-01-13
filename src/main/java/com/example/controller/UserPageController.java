@@ -4,9 +4,7 @@ import com.example.crm.CrmUser;
 import com.example.demo.exception_handling.MyErrorResponse;
 import com.example.entity.*;
 import com.example.services.*;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -32,19 +30,16 @@ public class UserPageController {
     private final ReviewService reviewService;
     private final ReviewChangesService reviewChangesService;
 
-    private final RatingService ratingService;
 
     private final UserTokenService userTokenService;
 
 
-    public UserPageController(UserService userService, OwnedBookService ownedBookService, BookService bookService, ReviewService reviewService, ReviewChangesService reviewChangesService, RatingService ratingService, UserTokenService userTokenService) {
+    public UserPageController(UserService userService, OwnedBookService ownedBookService, BookService bookService, ReviewService reviewService, ReviewChangesService reviewChangesService, UserTokenService userTokenService) {
         this.userService = userService;
         this.ownedBookService = ownedBookService;
         this.bookService = bookService;
         this.reviewService = reviewService;
         this.reviewChangesService = reviewChangesService;
-        this.ratingService = ratingService;
-
         this.userTokenService = userTokenService;
     }
 
@@ -62,7 +57,7 @@ public class UserPageController {
     }
 
     @PutMapping("/editUser")
-    private ResponseEntity<?> editUserInfo(@RequestBody CrmUser s, BindingResult bindingResult, Principal principal){
+    private ResponseEntity<?> editUserInfo(@RequestBody CrmUser s, Principal principal){
         User newUser = getUser(principal, userService);
         UserToken userToken = userTokenService.findUserTokenByUserName(newUser.getUserName());
         System.out.println("before checking email ");
@@ -79,11 +74,11 @@ public class UserPageController {
             StringBuilder sb = new StringBuilder();
 
             if(emailExist != null)
-                sb.append(emailExist + ',');
+                sb.append(emailExist).append(',');
             if(usernameExist != null)
-                sb.append(usernameExist + ',');
+                sb.append(usernameExist).append(',');
             System.out.println("invalid checking email ");
-            return ResponseEntity.badRequest().body(new MyErrorResponse(400, sb.toString().substring(0, sb.length() - 1), LocalDate.now()));
+            return ResponseEntity.badRequest().body(new MyErrorResponse(400, sb.substring(0, sb.length() - 1), LocalDate.now()));
         }
 
         if(s.getPassword() != null){
@@ -156,7 +151,7 @@ public class UserPageController {
 
         ownedBookService.deleteById(ownedBook.getId());
         for(OwnedBook b : user.getOwnedBookSet()){
-            if(b.getId() == ownedBook.getId()){
+            if(b.getId().longValue() == ownedBook.getId().longValue()){
                 ownedBook = b;
                 break;
             }
@@ -204,19 +199,19 @@ public class UserPageController {
 
         user = getUser(principal, userService);
 
-        OwnedBook book = ownedBookService.findOwnedBookByBookAndUser(bookService.findById(book_id), user);
-        if(book == null)
+        OwnedBook book = ownedBookService.findById(book_id);
+        if(book == null || (book.getUser().getId().longValue() != user.getId().longValue()))
             return ResponseEntity.badRequest().body(new MyErrorResponse(400, "you don't own this book", LocalDate.now()));
 
         book.setAvaliable(available);
         ownedBookService.save(book);
 
-        return ResponseEntity.ok(new MyErrorResponse(200, available ? "your book is available" : "your book is unavailable", LocalDate.now()));
+        return ResponseEntity.ok(new MyErrorResponse(200, available ? "Your book is available" : "Your book is unavailable", LocalDate.now()));
     }
-    private List<Book> getBooksFromUrl(String surl) throws IOException {
-        URL url = new URL(surl);
+    private List<Book> getBooksFromUrl(String sUrl) throws IOException {
+        URL url = new URL(sUrl);
         List<Book> list = new ArrayList<>();
-        String res[] = getResponseContent(url).replace("[", "").replace("]","").split(",");
+        String[] res = getResponseContent(url).replace("[", "").replace("]","").split(",");
         Arrays.stream(res).forEach(str->{
             Long id = Double.valueOf(str).longValue();
             Book book = bookService.findById(id);
