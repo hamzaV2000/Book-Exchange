@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User save(User object) {
-        object.setPassword(bCryptPasswordEncoder.encode(object.getPassword()));
+
         Role userRole = roleRepository.findByRole("ROLE_USER");
         object.setRoles(new HashSet<Role>(Collections.singletonList(userRole)));
         return userRepository.save(object);
@@ -64,12 +64,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public void save(CrmUser theCrmUser, User user) {
 
-        if(user == null)
+        if(user == null){
             user = new User();
+            user.setPassword(bCryptPasswordEncoder.encode(theCrmUser.getPassword()));
+        }
 
-        if(theCrmUser.getPassword() != null)
-            user.setPassword(theCrmUser.getPassword());
 
+        if(theCrmUser.getPassword() != null){
+            user.setPassword(bCryptPasswordEncoder.encode(theCrmUser.getPassword()));
+        }
         user.setLastLoginDate(LocalDate.now());
 
         if(user.getJoinDate() == null)

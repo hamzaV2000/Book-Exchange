@@ -35,12 +35,12 @@ public class Boostrap implements ApplicationListener<ContextRefreshedEvent> {
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-//        Book book = bookRepository.findById(36l).orElse(null);
+//        Book = bookRepository.findById(36l).orElse(null);
 //
 //        if(book != null)
 //            System.out.println(book);
 
-
+/*
         try {
             URL whatismyip = new URL("https://api.ipify.org?format=json");
             BufferedReader in = null;
@@ -51,6 +51,7 @@ public class Boostrap implements ApplicationListener<ContextRefreshedEvent> {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+*/
 
 
 
