@@ -73,11 +73,14 @@ public class ExchangeController {
                 return;
             }
             CrmExchange crmExchange = new CrmExchange();
+
             crmExchange.setHis_book_id(ownedBook.getBook().getId());
             crmExchange.setHis_owned_book_id(ownedBook.getId());
             crmExchange.setHis_profile_image_url(otherUser.getProfileImageUrl());
             crmExchange.setHis_username(otherUser.getUserName());
             crmExchange.setHis_book_cover_image(ownedBook.getBook().getCoverPage());
+            crmExchange.setHis_book_title(ownedBook.getBook().getTitle());
+
             list.add(crmExchange);
 
         });

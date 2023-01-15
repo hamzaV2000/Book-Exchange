@@ -9,6 +9,7 @@ public class CrmExchange {
     private String his_profile_image_url;
 
     private String his_book_cover_image;
+    private String his_book_title;
 
     private Long his_owned_book_id;
 
@@ -17,10 +18,11 @@ public class CrmExchange {
     public CrmExchange() {
     }
 
-    public CrmExchange(String his_username, String his_profile_image_url, String his_book_cover_image, Long his_owned_book_id, Long his_book_id) {
+    public CrmExchange(String his_username, String his_profile_image_url, String his_book_cover_image, String his_book_title, Long his_owned_book_id, Long his_book_id) {
         this.his_username = his_username;
         this.his_profile_image_url = his_profile_image_url;
         this.his_book_cover_image = his_book_cover_image;
+        this.his_book_title = his_book_title;
         this.his_owned_book_id = his_owned_book_id;
         this.his_book_id = his_book_id;
     }
@@ -63,5 +65,13 @@ public class CrmExchange {
 
     public void setHis_book_cover_image(String his_book_cover_image) {
         this.his_book_cover_image = his_book_cover_image;
+    }
+
+    public String getHis_book_title() {
+        return his_book_title;
+    }
+
+    public void setHis_book_title(String his_book_title) {
+        this.his_book_title = his_book_title;
     }
 }
