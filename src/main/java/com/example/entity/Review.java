@@ -10,8 +10,14 @@ import java.sql.Timestamp;
 @Table(name = "reviews")
 public class Review {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO, generator="seq")
-    @GenericGenerator(name = "seq", strategy="increment")
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "my_sequence")
+    @TableGenerator(
+            name = "my_sequence",
+            table = "id_gen",
+            pkColumnName = "gen_name",
+            valueColumnName = "gen_val",
+            initialValue = 5492557,
+            allocationSize = 10)
     private Long id;
 
     @ManyToOne
