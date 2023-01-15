@@ -82,7 +82,7 @@ public class UserPageController {
         }
 
         if(s.getPassword() != null){
-            if(s.getMatchingPassword() == null || s.getMatchingPassword().equals(s.getPassword())){
+            if(s.getMatchingPassword() == null || !s.getMatchingPassword().equals(s.getPassword())){
                 return ResponseEntity.badRequest().body(new MyErrorResponse(400,"Passwords don't match." , LocalDate.now()));
             }
         }
