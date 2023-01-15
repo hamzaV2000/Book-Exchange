@@ -1,6 +1,7 @@
 package com.example.controller;
 
 
+import com.example.crm.CrmExchange;
 import com.example.demo.exception_handling.MyErrorResponse;
 import com.example.entity.*;
 import com.example.services.BookExchangeService;
@@ -18,9 +19,7 @@ import java.net.URL;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.example.controller.Utility.*;
 
@@ -48,7 +47,7 @@ public class ExchangeController {
         URL url = new URL(IP_ADDRESS + "/recommendBySimilarUsers/" + user.getId());
 
         String json = getResponseContent(url);
-        Map<Long, Long> map = new HashMap<>();
+        List<CrmExchange> list = new ArrayList<>();
         JSONArray jsonArray = new JSONArray(json);
         jsonArray.forEach(jsonh->{
             JSONObject jsonObject =(JSONObject) jsonh;
@@ -61,15 +60,29 @@ public class ExchangeController {
 
             OwnedBook ownedBook = ownedBookService.findOwnedBookByBookAndUser(book, otherUser);
 
-            if(ownedBook == null || !ownedBook.isAvaliable())
+            //System.out.println(otherUser);
+            if(ownedBook == null ){
+                System.out.println("book is null");
                 return;
-            if(!otherUser.getCity().equals(user.getCity()))
+            }
+            if(!ownedBook.isAvaliable()){
+                System.out.println("book is not ava");
+            }
+            if(!otherUser.getCity().equalsIgnoreCase(user.getCity())) {
+                System.out.println("cities are not equal");
                 return;
-            map.put(otherUser.getId(), ownedBook.getId());
+            }
+            CrmExchange crmExchange = new CrmExchange();
+            crmExchange.setHis_book_id(ownedBook.getBook().getId());
+            crmExchange.setHis_owned_book_id(ownedBook.getId());
+            crmExchange.setHis_profile_image_url(otherUser.getProfileImageUrl());
+            crmExchange.setHis_username(otherUser.getUserName());
+            crmExchange.setHis_book_cover_image(ownedBook.getBook().getCoverPage());
+            list.add(crmExchange);
 
         });
-
-        return ResponseEntity.ok(map);
+        System.out.println(list);
+        return ResponseEntity.ok(list);
     }
     @PostMapping("/initExchange")
     private ResponseEntity<?> initExchange(Principal principal,

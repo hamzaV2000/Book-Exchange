@@ -56,6 +56,7 @@ public class OwnedBook {
     public String toString() {
         return "OwnedBook{" +
                 "book=" + book.getTitle() +
+                "book_id=" + book.getId() +
                 ", user=" + user.getUserName() +
                 ", avaliable=" + avaliable +
                 '}';
