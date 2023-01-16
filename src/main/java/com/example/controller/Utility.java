@@ -20,22 +20,22 @@ public class Utility {
     static String IP_ADDRESS ;
     private Utility (){
 
-        URL whatismyip = null;
-        try {
-            whatismyip = new URL("https://api.ipify.org?format=json");
-            BufferedReader in = null;
-            in = new BufferedReader(new InputStreamReader(
-                    whatismyip.openStream()));
-            IP_ADDRESS = in.readLine(); //you get the IP as a String
-            System.out.println(IP_ADDRESS);
-            JSONObject jsonObject = new JSONObject(IP_ADDRESS);
-            IP_ADDRESS = "http://" + jsonObject.getString("ip") + "/python";
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
+//        URL whatismyip = null;
+//        try {
+//            whatismyip = new URL("https://api.ipify.org?format=json");
+//            BufferedReader in = null;
+//            in = new BufferedReader(new InputStreamReader(
+//                    whatismyip.openStream()));
+//            IP_ADDRESS = in.readLine(); //you get the IP as a String
+//            System.out.println(IP_ADDRESS);
+//            JSONObject jsonObject = new JSONObject(IP_ADDRESS);
+//            IP_ADDRESS = "http://" + jsonObject.getString("ip") + "/python";
+//        } catch (MalformedURLException e) {
+//            throw new RuntimeException(e);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+        IP_ADDRESS = "http://127.0.0.1:5001/python";
 
     }
     static User getUser(Principal principal, UserService userService) {

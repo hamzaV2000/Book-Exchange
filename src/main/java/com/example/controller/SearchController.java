@@ -33,7 +33,7 @@ public class SearchController {
     private ResponseEntity<?> bookSearch
             (@RequestParam String domain, @RequestParam String query)  {
         try {
-            String url = IP_ADDRESS + "/search/" + domain + "/" + query;
+            String url = IP_ADDRESS + ("/search/" + domain + "/" + query).replace(" ", "%20");
 
             return ResponseEntity.ok(getBooksFromUrl(url));
         } catch (MalformedURLException e) {

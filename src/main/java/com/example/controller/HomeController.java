@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.Principal;
 import java.util.*;
@@ -89,6 +90,12 @@ public class HomeController {
     private ResponseEntity<?> getTop10() throws IOException {
 
         return ResponseEntity.ok(getBooksFromUrl(IP_ADDRESS + "/topn"));
+    }
+
+    @GetMapping("/recommendBySimilarBook")
+    private ResponseEntity<?> bySimilarBook(@RequestParam Long book_id) throws IOException {
+        List<Book> list = getBooksFromUrl(IP_ADDRESS + "/recommendBySimilarBook/" + book_id);
+        return ResponseEntity.ok(list.subList(1, list.size()));
     }
     private List<Book> getBooksFromUrl(String surl) throws IOException {
         URL url = new URL(surl);
