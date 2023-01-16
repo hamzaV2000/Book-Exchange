@@ -43,20 +43,12 @@ public class HomeController {
     @GetMapping("/basedOnYourInterests")
     private ResponseEntity<?> basedOnYourInterests(Principal principal) throws IOException {
 
-        user = Utility.getUser(principal, userService);
 
+        user = Utility.getUser(principal, userService);
         HashSet<String> genres = new HashSet<>();
         List<Review> reviewList = reviewService.findAllByUser(user);
-        if(reviewList.size() == 0){
 
-            if(user.getInterest() != null){
-
-                String url = IP_ADDRESS + "/search/genre/" + user.getInterest();
-                return ResponseEntity.ok(getBooksFromUrl(url));
-            }else{
-                throw new MyException("Specify Interests or Rate books");
-            }
-        }else{
+        if(reviewList.size() != 0){
             reviewList.forEach(review -> {
                 if(review.getUserRating() >= 4){
                     String[] genresArr = review.getBook().getGenres().replace("{", "").replace("}", "").split(",");
@@ -65,9 +57,18 @@ public class HomeController {
                     });
                 }
             });
-            String url = IP_ADDRESS + "/search/genre/" + genres.toString().replace("[", "").replace("]", "");
-            return ResponseEntity.ok(getBooksFromUrl(url));
+            if (genres.size() != 0){
+                String url = IP_ADDRESS + "/search/genre/" + genres.toString().replace("[", "").replace("]", "").replace(" ", "%20");
+                return ResponseEntity.ok(getBooksFromUrl(url));
+            }
         }
+        if(user.getInterest() != null){
+            String url = IP_ADDRESS + "/search/genre/" + user.getInterest().replace(" ", "%20");
+            return ResponseEntity.ok(getBooksFromUrl(url));
+        }else{
+            throw new MyException("Specify Interests or Rate books");
+        }
+
     }
 
     @GetMapping("/recommendBySimilarUsers")
