@@ -19,12 +19,12 @@ public class OwnedBook {
     @ManyToOne(fetch = FetchType.EAGER)
     @JsonBackReference
     private User user;
-    private boolean avaliable;
-    public boolean isAvaliable() {
-        return avaliable;
+    private boolean available;
+    public boolean isAvailable() {
+        return available;
     }
-    public void setAvaliable(boolean avaliable) {
-        this.avaliable = avaliable;
+    public void setAvailable(boolean avaliable) {
+        this.available = avaliable;
     }
 
     public Long getId() {
@@ -58,7 +58,7 @@ public class OwnedBook {
                 "book=" + book.getTitle() +
                 "book_id=" + book.getId() +
                 ", user=" + user.getUserName() +
-                ", avaliable=" + avaliable +
+                ", available=" + available +
                 '}';
     }
 }

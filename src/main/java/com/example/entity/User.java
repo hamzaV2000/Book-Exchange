@@ -207,7 +207,7 @@ public class User{
         OwnedBook ownedBook = new OwnedBook();
         ownedBook.setUser(this);
         ownedBook.setBook(book);
-        ownedBook.setAvaliable(false);
+        ownedBook.setAvailable(false);
 
         this.ownedBookSet.add(ownedBook);
     }

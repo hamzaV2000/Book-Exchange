@@ -131,7 +131,7 @@ public class UserPageController {
         OwnedBook ownedBook = new OwnedBook();
         ownedBook.setBook(book);
         ownedBook.setUser(user);
-        ownedBook.setAvaliable(false);
+        ownedBook.setAvailable(false);
         ownedBookService.save(ownedBook);
         user.getOwnedBookSet().add(ownedBook);
         return ResponseEntity.ok(new MyErrorResponse(200, "added successfully", LocalDate.now()));
@@ -203,7 +203,7 @@ public class UserPageController {
         if(book == null || (book.getUser().getId().longValue() != user.getId().longValue()))
             return ResponseEntity.badRequest().body(new MyErrorResponse(400, "you don't own this book", LocalDate.now()));
 
-        book.setAvaliable(available);
+        book.setAvailable(available);
         ownedBookService.save(book);
 
         return ResponseEntity.ok(new MyErrorResponse(200, available ? "Your book is available" : "Your book is unavailable", LocalDate.now()));

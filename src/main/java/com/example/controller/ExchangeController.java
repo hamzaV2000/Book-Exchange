@@ -65,7 +65,7 @@ public class ExchangeController {
                 System.out.println("book is null");
                 return;
             }
-            if(!ownedBook.isAvaliable()){
+            if(!ownedBook.isAvailable()){
                 System.out.println("book is not ava");
             }
             if(!otherUser.getCity().equalsIgnoreCase(user.getCity())) {
