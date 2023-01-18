@@ -59,7 +59,7 @@ public class MessageController {
         User user  = Utility.getUser(principal, userService);
         BookExchange bookExchange = bookExchangeService.findById(exchange_id);
 
-        if((user.getId() != bookExchange.getHisBook().getUser().getId() && user.getId() != bookExchange.getMe().getId()) || bookExchange.getStatus() == ExchangeStatus.FAILED)
+        if((user.getId() != bookExchange.getHisBook().getUser().getId() && user.getId() != bookExchange.getMe().getId()) || bookExchange.getStatus() != ExchangeStatus.ON_GOING)
             throw new MyException("You don't have access to this conversation.");
 
         List<Message> messages = messageService.findAllByBookExchange(bookExchange);
@@ -87,7 +87,7 @@ public class MessageController {
         List<CrmConvExchange> list_final = new ArrayList<>();
 
         bookExchangeService.findAllByMe(user).forEach(bookExchange -> {
-            if(bookExchange.getStatus() != ExchangeStatus.FAILED){
+            if(bookExchange.getStatus() == ExchangeStatus.ON_GOING){
                 CrmConvExchange crmConvExchange = new CrmConvExchange();
 
                 crmConvExchange.setExchange_id(bookExchange.getId());
@@ -102,7 +102,7 @@ public class MessageController {
 
         });
         bookExchangeService.findAllByHim(user).forEach(bookExchange -> {
-            if(bookExchange.getStatus() != ExchangeStatus.FAILED){
+            if(bookExchange.getStatus() == ExchangeStatus.ON_GOING){
                 CrmConvExchange crmConvExchange = new CrmConvExchange();
 
                 crmConvExchange.setExchange_id(bookExchange.getId());

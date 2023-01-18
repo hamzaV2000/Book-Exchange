@@ -1,6 +1,7 @@
 package com.example.controller;
 
 
+import com.example.crm.CrmConvExchange;
 import com.example.crm.CrmExchange;
 import com.example.demo.exception_handling.MyErrorResponse;
 import com.example.entity.*;
@@ -113,7 +114,16 @@ public class ExchangeController {
 
         bookExchangeService.save(bookExchange);
 
-        return ResponseEntity.ok(new MyErrorResponse(200, bookExchange.getId().toString(), LocalDate.now()));
+        CrmConvExchange crmConvExchange = new CrmConvExchange();
+
+        crmConvExchange.setExchange_id(bookExchange.getId());
+        crmConvExchange.setImage(bookExchange.getMe().getProfileImageUrl());
+        crmConvExchange.setUsername(bookExchange.getMe().getUserName());
+        crmConvExchange.setHis_book_id(bookExchange.getMyBook().getBook().getId());
+        crmConvExchange.setMy_book_id(bookExchange.getHisBook().getBook().getId());
+        crmConvExchange.setInitiator(crmConvExchange.getUsername());
+
+        return ResponseEntity.ok(crmConvExchange);
     }
 
     @GetMapping("/exchangesFromPeople")
