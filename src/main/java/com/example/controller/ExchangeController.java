@@ -113,7 +113,7 @@ public class ExchangeController {
 
         bookExchangeService.save(bookExchange);
 
-        return ResponseEntity.ok(new MyErrorResponse(200, "init Exchange was successful with exchange_id: " + bookExchange.getId(), LocalDate.now()));
+        return ResponseEntity.ok(new MyErrorResponse(200, bookExchange.getId().toString(), LocalDate.now()));
     }
 
     @GetMapping("/exchangesFromPeople")
